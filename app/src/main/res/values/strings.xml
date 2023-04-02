@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">GottaEatEmAll</string>
+    <string name="page_home">Home</string>
+    <string name="page_search">Search</string>
+    <string name="page_team">Team</string>
+    <string name="page_meal">Meal</string>
+    <string name="page_card">Card</string>
+    <string name="page_viewer">Viewer</string>
 </resources>
