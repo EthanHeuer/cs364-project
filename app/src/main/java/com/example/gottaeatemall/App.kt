@@ -23,7 +23,7 @@ enum class AppScreen(@StringRes val title: Int) {
     Team(title = R.string.page_team),
     Meal(title = R.string.page_meal),
     Card(title = R.string.page_card),
-    Viewer(title = R.string.page_viewer)
+    Detail(title = R.string.page_detail)
 }
 
 @Composable
@@ -95,6 +95,10 @@ fun App(
 
             composable(route = AppScreen.Card.name) {
                 CardScreen()
+            }
+
+            composable(route = AppScreen.Detail.name) {
+                DetailScreen()
             }
         }
     }
