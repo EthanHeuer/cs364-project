@@ -1,15 +1,21 @@
 package com.example.gottaeatemall
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,19 +41,40 @@ fun AppBottomBar(
     navPageCard: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Text(stringResource(id = currentScreen.title))
-    Row {
-        Button(onClick = navPageSearch) {
-            Text("List")
-        }
-        Button(onClick = navPageTeam) {
-            Text("Team")
-        }
-        Button(onClick = navPageMeal) {
-            Text("Meal")
-        }
-        Button(onClick = navPageCard) {
-            Text("Card")
+    BottomAppBar(
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            BottomNavigationItem(
+                icon = { Icon(imageVector = Icons.Default.Search,"") },
+                label = { Text("Search") },
+                selected = (currentScreen.name == AppScreen.Search.name),
+                onClick = navPageSearch
+            )
+
+            BottomNavigationItem(
+                icon = { Icon(imageVector = Icons.Default.Lock,"") },
+                label = { Text("Team") },
+                selected = (currentScreen.name == AppScreen.Team.name),
+                onClick = navPageTeam
+            )
+
+            BottomNavigationItem(
+                icon = { Icon(imageVector = Icons.Default.Lock,"") },
+                label = { Text("Meal") },
+                selected = (currentScreen.name == AppScreen.Meal.name),
+                onClick = navPageMeal
+            )
+
+            BottomNavigationItem(
+                icon = { Icon(imageVector = Icons.Default.Lock,"") },
+                label = { Text("Card") },
+                selected = (currentScreen.name == AppScreen.Card.name),
+                onClick = navPageCard
+            )
         }
     }
 }
@@ -64,14 +91,16 @@ fun App(
     )
 
     Scaffold(
-        bottomBar = {AppBottomBar(
-            currentScreen = currentScreen,
-            navPageSearch = { navController.navigate(AppScreen.Search.name) },
-            navPageTeam = { navController.navigate(AppScreen.Team.name) },
-            navPageMeal = { navController.navigate(AppScreen.Meal.name) },
-            navPageCard = { navController.navigate(AppScreen.Card.name) }
-        )}
-    ) {innerPadding ->
+        bottomBar = {
+            AppBottomBar(
+                currentScreen = currentScreen,
+                navPageSearch = { navController.navigate(AppScreen.Search.name) },
+                navPageTeam = { navController.navigate(AppScreen.Team.name) },
+                navPageMeal = { navController.navigate(AppScreen.Meal.name) },
+                navPageCard = { navController.navigate(AppScreen.Card.name) }
+            )
+        }
+    ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = AppScreen.Home.name,
@@ -102,4 +131,10 @@ fun App(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AppPreview() {
+    App()
 }
