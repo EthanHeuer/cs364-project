@@ -6,4 +6,9 @@
     <string name="page_meal">Meal</string>
     <string name="page_card">Card</string>
     <string name="page_detail">Detail</string>
+
+    <string name="create_meal">Create a Meal</string>
+    <string name="favorite_meal">Favorite Meal</string>
+    <string name="choose_pokemon_meal">Choose a Pokemon for your meal</string>
+    <string name="confirm_selection">Are you sure you want to select this Pokemon?</string>
 </resources>
