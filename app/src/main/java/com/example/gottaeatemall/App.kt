@@ -28,6 +28,7 @@ enum class AppScreen(@StringRes val title: Int) {
     Search(title = R.string.page_search),
     Team(title = R.string.page_team),
     Meal(title = R.string.page_meal),
+    CreateMeal(title = R.string.create_meal),
     Card(title = R.string.page_card),
     Detail(title = R.string.page_detail)
 }
@@ -119,7 +120,14 @@ fun App(
             }
 
             composable(route = AppScreen.Meal.name) {
-                MealScreen()
+                MealScreen(
+                    onMealCreate =
+                        { navController.navigate(AppScreen.CreateMeal.name) },
+                )
+            }
+
+            composable(route = AppScreen.CreateMeal.name) {
+                MealPopupBox()
             }
 
             composable(route = AppScreen.Card.name) {
