@@ -43,7 +43,8 @@ fun AppBottomBar(
     modifier: Modifier = Modifier
 ) {
     BottomAppBar(
-        contentPadding = PaddingValues(0.dp)
+        contentPadding = PaddingValues(0.dp),
+        backgroundColor = Color.Red
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
