@@ -26,6 +26,7 @@ fun MealScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text("Search Bar goes here")
         Spacer(modifier = Modifier.padding(15.dp))
         Text("Meal Maker Screen")
         Button(

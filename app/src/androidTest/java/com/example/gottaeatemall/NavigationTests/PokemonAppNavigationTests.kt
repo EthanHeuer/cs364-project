@@ -50,4 +50,25 @@ class PokemonAppNavigationTests {
             .performClick()
         navController.assertCurrentRouteName(AppScreen.Search.name)
     }
+
+    @Test
+    fun pokemonNavHost_navigateToTeamScreen() {
+        composeTestRule.onNodeWithStringId(R.string.page_team)
+            .performClick()
+        navController.assertCurrentRouteName(AppScreen.Team.name)
+    }
+
+    @Test
+    fun pokemonNavHost_navigateToMealScreen() {
+        composeTestRule.onNodeWithStringId(R.string.page_meal)
+            .performClick()
+        navController.assertCurrentRouteName(AppScreen.Meal.name)
+    }
+
+    @Test
+    fun pokemonNavHost_navigateToTrainerCardScreen() {
+        composeTestRule.onNodeWithStringId(R.string.page_card)
+            .performClick()
+        navController.assertCurrentRouteName(AppScreen.Card.name)
+    }
 }
