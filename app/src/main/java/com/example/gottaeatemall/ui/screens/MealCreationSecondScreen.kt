@@ -20,10 +20,10 @@ import com.example.gottaeatemall.R
 
 
 @Composable
-fun MealPopupBox(
+fun MealSecondPopupBox(
     pokemonList: List<String>,
-    onFirstPokemonSelected: (String) -> Unit = {},
-    selectNext: () -> Unit
+    onSecondPokemonSelected: (String) -> Unit = {},
+    onSummaryButtonSelected: () -> Unit
 ){
 
     Column(modifier = Modifier
@@ -33,7 +33,7 @@ fun MealPopupBox(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = stringResource(id = R.string.choose_pokemon_meal),
+            text = "Choose a second Pokemon for your meal",
             textAlign = TextAlign.Center
         )
     }
@@ -62,7 +62,7 @@ fun MealPopupBox(
                         onClick = {
                             selectedPokemon = pokemon
                             confirmSelection = true
-                            onFirstPokemonSelected(pokemon)
+                            onSecondPokemonSelected(pokemon)
                         }
                     )
                     Text(pokemon)
@@ -83,9 +83,12 @@ fun MealPopupBox(
                     },
                     confirmButton = {
                         Button(
-                            onClick = selectNext
+                            onClick = {
+                                confirmSelection = true
+                                onSummaryButtonSelected
+                            }
                         ) {
-                            Text("Confirm Selection")
+                            Text("Confirm & Complete")
                         }
                     },
                     dismissButton = {

@@ -29,6 +29,7 @@ enum class AppScreen(@StringRes val title: Int) {
     Team(title = R.string.page_team),
     Meal(title = R.string.page_meal),
     CreateMeal(title = R.string.create_meal),
+    CreateMealSecond(title = R.string.favorite_meal),
     Card(title = R.string.page_card),
     Detail(title = R.string.page_detail)
 }
@@ -84,7 +85,8 @@ fun AppBottomBar(
 @Composable
 fun App(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    viewModel: PokemonViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
 
@@ -128,8 +130,34 @@ fun App(
             }
 
             composable(route = AppScreen.CreateMeal.name) {
-                MealPopupBox()
+                MealPopupBox(
+                    pokemonList = listOf("Bulbasaur", "Ivysaur", "Venusaur",
+                        "Charmander", "Charmeleon", "Charizard",
+                        "Squirtle", "Wartortle", "Blastoise",
+                        "Caterpie", "Metapod", "Butterfree",
+                        "Weedle", "Kakuna", "Beedrill",
+                        "Pikachu"
+                ),
+                    onFirstPokemonSelected = {viewModel.setFirstIngredient(it)},
+                    selectNext = {navController.navigate(AppScreen.CreateMealSecond.name)}
+                )
             }
+
+            composable(route = AppScreen.CreateMealSecond.name) {
+                MealSecondPopupBox(
+                    pokemonList = listOf("Bulbasaur", "Ivysaur", "Venusaur",
+                        "Charmander", "Charmeleon", "Charizard",
+                        "Squirtle", "Wartortle", "Blastoise",
+                        "Caterpie", "Metapod", "Butterfree",
+                        "Weedle", "Kakuna", "Beedrill",
+                        "Pikachu"
+                    ),
+                    onSecondPokemonSelected = {viewModel.setFirstIngredient(it)},
+                    onSummaryButtonSelected = {}
+                )
+            }
+
+
 
             composable(route = AppScreen.Card.name) {
                 CardScreen()
