@@ -1,8 +1,10 @@
 package com.example.gottaeatemall.ui.screens
 
-import android.graphics.Paint.Align
+import androidx.compose.material.Card
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -11,16 +13,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
-import com.example.gottaeatemall.App
 import com.example.gottaeatemall.R
-import com.example.gottaeatemall.ui.theme.GottaEatEmAllTheme
 
 @Composable
 fun MealScreen() {
@@ -48,7 +48,7 @@ fun MealScreen() {
     //If the user selected create a meal, show the popup window
     if (popupControl) {
         popupText = "Cancel Meal"
-
+        mealPopupBox(isOpen = popupControl)
         }
     }
 
@@ -63,8 +63,6 @@ fun mealPopupBox(isOpen: Boolean){
     var popupControl by remember { mutableStateOf(isOpen) }
 
     Box {
-        val popupWidth = 300.dp
-        val popupHeight = 100.dp
         Popup(
             alignment = Alignment.CenterStart,
             offset = IntOffset(0,500),
@@ -83,16 +81,33 @@ fun mealPopupBox(isOpen: Boolean){
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        "Choose your first Pokemon",
+                        text = stringResource(id = R.string.choose_pokemon_meal),
                         textAlign = TextAlign.Center
                     )
+                    pokemonList(pokemonList = listOf("Pikachu", "Bulbasaur"))
                     TextButton(onClick = { popupControl = !popupControl })
                     {
                         Text(
-                            "Back",
+                            text = stringResource(id = R.string.back),
                             textAlign = TextAlign.Center
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun pokemonList(pokemonList: List<String>, modifier: Modifier = Modifier){
+    LazyColumn(){
+        items(pokemonList){pokemon ->
+            Card(modifier = Modifier.padding(5.dp), elevation = 3.dp){
+                Column{
+                    Text(
+                        text = pokemon
+                    )
                 }
             }
         }
