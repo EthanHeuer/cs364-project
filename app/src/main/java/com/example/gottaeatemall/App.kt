@@ -1,19 +1,13 @@
 package com.example.gottaeatemall
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -28,8 +22,9 @@ enum class AppScreen(@StringRes val title: Int) {
     Search(title = R.string.page_search),
     Team(title = R.string.page_team),
     Meal(title = R.string.page_meal),
-    CreateMeal(title = R.string.create_meal),
-    CreateMealSecond(title = R.string.favorite_meal),
+    SelectFirstIngredient(title = R.string.first_ingredient),
+    SelectSecondIngredient(title = R.string.second_ingredient),
+    MealSummary(title = R.string.meal_summary),
     Card(title = R.string.page_card),
     Detail(title = R.string.page_detail)
 }
@@ -94,6 +89,8 @@ fun App(
         backStackEntry?.destination?.route ?: AppScreen.Home.name
     )
 
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         bottomBar = {
             AppBottomBar(
@@ -125,11 +122,11 @@ fun App(
             composable(route = AppScreen.Meal.name) {
                 MealScreen(
                     onMealCreate =
-                        { navController.navigate(AppScreen.CreateMeal.name) },
+                        { navController.navigate(AppScreen.SelectFirstIngredient.name) },
                 )
             }
 
-            composable(route = AppScreen.CreateMeal.name) {
+            composable(route = AppScreen.SelectFirstIngredient.name) {
                 MealPopupBox(
                     pokemonList = listOf("Bulbasaur", "Ivysaur", "Venusaur",
                         "Charmander", "Charmeleon", "Charizard",
@@ -139,11 +136,11 @@ fun App(
                         "Pikachu"
                 ),
                     onFirstPokemonSelected = {viewModel.setFirstIngredient(it)},
-                    selectNext = {navController.navigate(AppScreen.CreateMealSecond.name)}
+                    selectNext = {navController.navigate(AppScreen.SelectSecondIngredient.name)}
                 )
             }
 
-            composable(route = AppScreen.CreateMealSecond.name) {
+            composable(route = AppScreen.SelectSecondIngredient.name) {
                 MealSecondPopupBox(
                     pokemonList = listOf("Bulbasaur", "Ivysaur", "Venusaur",
                         "Charmander", "Charmeleon", "Charizard",
@@ -152,9 +149,14 @@ fun App(
                         "Weedle", "Kakuna", "Beedrill",
                         "Pikachu"
                     ),
-                    onSecondPokemonSelected = {viewModel.setFirstIngredient(it)},
-                    onSummaryButtonSelected = {}
+                    onSecondPokemonSelected = {viewModel.setSecondIngredient(it)},
+                    onSummaryButtonSelected = {navController.navigate(AppScreen.MealSummary.name)}
                 )
+            }
+
+            composable(route = AppScreen.MealSummary.name){
+                mealSummary(mealUIState = uiState,
+                onBackButtonSelected = {navController.navigate(AppScreen.Meal.name)})
             }
 
 
