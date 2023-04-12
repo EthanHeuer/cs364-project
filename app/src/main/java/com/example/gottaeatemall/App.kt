@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -15,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.gottaeatemall.data.DataSource.PokemonList
 import com.example.gottaeatemall.ui.screens.*
 
 enum class AppScreen(@StringRes val title: Int) {
@@ -128,35 +130,27 @@ fun App(
 
             composable(route = AppScreen.SelectFirstIngredient.name) {
                 MealPopupBox(
-                    pokemonList = listOf("Bulbasaur", "Ivysaur", "Venusaur",
-                        "Charmander", "Charmeleon", "Charizard",
-                        "Squirtle", "Wartortle", "Blastoise",
-                        "Caterpie", "Metapod", "Butterfree",
-                        "Weedle", "Kakuna", "Beedrill",
-                        "Pikachu"
-                ),
+                    pokemonList = PokemonList,
                     onFirstPokemonSelected = {viewModel.setFirstIngredient(it)},
-                    selectNext = {navController.navigate(AppScreen.SelectSecondIngredient.name)}
+                    selectNext = {navController.navigate(AppScreen.SelectSecondIngredient.name)},
+                    title = stringResource(id = R.string.choose_pokemon_meal)
                 )
             }
 
             composable(route = AppScreen.SelectSecondIngredient.name) {
-                MealSecondPopupBox(
-                    pokemonList = listOf("Bulbasaur", "Ivysaur", "Venusaur",
-                        "Charmander", "Charmeleon", "Charizard",
-                        "Squirtle", "Wartortle", "Blastoise",
-                        "Caterpie", "Metapod", "Butterfree",
-                        "Weedle", "Kakuna", "Beedrill",
-                        "Pikachu"
-                    ),
-                    onSecondPokemonSelected = {viewModel.setSecondIngredient(it)},
-                    onSummaryButtonSelected = {navController.navigate(AppScreen.MealSummary.name)}
+                MealPopupBox(
+                    pokemonList = PokemonList,
+                    onFirstPokemonSelected = {viewModel.setSecondIngredient(it)},
+                    selectNext = {navController.navigate(AppScreen.MealSummary.name)},
+                    title = "Choose a second Pokemon for your meal"
                 )
             }
 
             composable(route = AppScreen.MealSummary.name){
                 mealSummary(mealUIState = uiState,
-                onBackButtonSelected = {navController.navigate(AppScreen.Meal.name)})
+                onBackButtonSelected = {
+                    finishMeal(viewModel, navController)
+                })
             }
 
 
@@ -171,6 +165,14 @@ fun App(
         }
     }
 }
+
+    fun finishMeal(
+    viewModel: PokemonViewModel,
+    navController: NavHostController
+    ){
+        viewModel.resetOrder()
+        navController.popBackStack(AppScreen.Meal.name, false)
+    }
 
 @Preview(showBackground = true)
 @Composable
