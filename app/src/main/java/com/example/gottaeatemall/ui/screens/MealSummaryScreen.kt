@@ -20,12 +20,20 @@ fun mealSummary(
 mealUIState: PokemonUIState,
 onBackButtonSelected: () -> Unit
 ) {
+    var ingredients = ""
+    for (o in mealUIState.ingredients){
+        if (o == mealUIState.ingredients[mealUIState.ingredients.size-1]){
+            ingredients += o
+        }
+        else{
+            ingredients += "${o}, "
+        }
+    }
     val items = listOf(
-        Pair(stringResource(id = R.string.first_ingredient), mealUIState.firstIngredient),
-        Pair(stringResource(id = R.string.second_ingredient), mealUIState.secondIngredient),
+        Pair(stringResource(id = R.string.ingredient_list), ingredients),
         Pair(
             "Complete Meal: ",
-            "${mealUIState.firstIngredient} + ${mealUIState.secondIngredient} " +
+            "${mealUIState.ingredients[0]} + ${mealUIState.ingredients[1]} " +
                     "${pokemonMealTypes[Random().nextInt(pokemonMealTypes.size)]}"
         )
     )
