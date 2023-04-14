@@ -9,7 +9,7 @@
 
     <string name="create_meal">Create a Meal</string>
     <string name="favorite_meal">Favorite Meal</string>
-    <string name="choose_pokemon_meal">Choose a Pokemon for your meal</string>
+    <string name="choose_pokemon_meal">Choose two Pokemon for your meal</string>
     <string name="confirm">Confirm</string>
     <string name="confirm_complete">Confirm &amp; Complete</string>
     <string name="cancel">Cancel</string>
@@ -17,6 +17,6 @@
     <string name="back">Back</string>
     <string name="first_ingredient">First Ingredient</string>
     <string name="second_ingredient">Second Ingredient</string>
-    <string name="ingredient_list">Ingredients:</string>
+    <string name="ingredient_list">Ingredients</string>
     <string name="meal_summary">Meal Summary</string>
 </resources>

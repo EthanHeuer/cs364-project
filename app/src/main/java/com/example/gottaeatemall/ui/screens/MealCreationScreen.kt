@@ -20,6 +20,7 @@ fun MealPopupBox(
     pokemonList: List<String>,
     onFirstPokemonSelected: (String) -> Unit = {},
     selectNext: () -> Unit,
+    reset: () ->Unit = {},
     title: String
 ){
 
@@ -57,18 +58,22 @@ fun MealPopupBox(
                     Checkbox(
                         checked = checked.value,
                         onCheckedChange ={
+                            selectedPokemon = pokemon
                             checked.value = it
                             onFirstPokemonSelected(pokemon)
-                            if(checked.value)
+                            if(checked.value) {
                                 ingredientAmount++
-                            else
+                            }
+                            else {
                                 ingredientAmount--
+                            }
                         }
                     )
                     Text(pokemon)
                 }
             }
         }
+
         if (ingredientAmount == 2) {
             Column() {
                 AlertDialog(
@@ -90,9 +95,7 @@ fun MealPopupBox(
                     },
                     dismissButton = {
                         Button(
-                            onClick = {
-                                confirmSelection = false
-                            }
+                            onClick = reset
                         ) {
                             Text(stringResource(id = R.string.cancel))
                         }
