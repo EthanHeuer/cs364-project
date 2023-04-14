@@ -2,179 +2,134 @@ package com.example.gottaeatemall.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gottaeatemall.R
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-val FAKE_DATA = listOf(
-    "Bulbasaur",
-    "Ivysaur",
-    "Venusaur",
-    "Charmander",
-    "Charmeleon",
-    "Charizard",
-    "Squirtle",
-    "Wartortle",
-    "Blastoise",
-    "Caterpie",
-    "Metapod",
-    "Butterfree",
-    "Weedle",
-    "Kakuna",
-    "Beedrill",
-    "Pidgey",
-    "Pidgeotto",
-    "Pidgeot",
-    "Rattata",
-    "Raticate",
-    "Spearow",
-    "Fearow",
-    "Ekans",
-    "Arbok",
-    "Pikachu",
-    "Raichu",
-    "Sandshrew",
-    "Sandslash",
-    "Nidoran F",
-    "Nidorina",
-    "Nidoqueen",
-    "Nidoran M",
-    "Nidorino",
-    "Nidoking",
-    "Clefairy",
-    "Clefable",
-    "Vulpix",
-    "Ninetales",
-    "Jigglypuff",
-    "Wigglytuff",
-    "Zubat",
-    "Golbat",
-    "Oddish",
-    "Gloom",
-    "Vileplume",
-    "Paras",
-    "Parasect",
-    "Venonat",
-    "Venomoth",
-    "Diglett",
-    "Dugtrio",
-    "Meowth",
-    "Persian",
-    "Psyduck",
-    "Golduck",
-    "Mankey",
-    "Primeape",
-    "Growlithe",
-    "Arcanine",
-    "Poliwag",
-    "Poliwhirl",
-    "Poliwrath",
-    "Abra",
-    "Kadabra",
-    "Alakazam",
-    "Machop",
-    "Machoke",
-    "Machamp",
-    "Bellsprout",
-    "Weepinbell",
-    "Victreebel",
-    "Tentacool",
-    "Tentacruel",
-    "Geodude",
-    "Graveler",
-    "Golem",
-    "Ponyta",
-    "Rapidash",
-    "Slowpoke",
-    "Slowbro",
-    "Magnemite",
-    "Magneton",
-    "Farfetchd",
-    "Doduo",
-    "Dodrio",
-    "Seel",
-    "Dewgong",
-    "Grimer",
-    "Muk",
-    "Shellder",
-    "Cloyster",
-    "Gastly",
-    "Haunter",
-    "Gengar",
-    "Onix",
-    "Drowzee",
-    "Hypno",
-    "Krabby",
-    "Kingler",
-    "Voltorb",
-    "Electrode",
-    "Exeggcute",
-    "Exeggutor",
-    "Cubone",
-    "Marowak",
-    "Hitmonlee",
-    "Hitmonchan",
-    "Lickitung",
-    "Koffing",
-    "Weezing",
-    "Rhyhorn",
-    "Rhydon",
-    "Chansey",
-    "Tangela",
-    "Kangaskhan",
-    "Horsea",
-    "Seadra",
-    "Goldeen",
-    "Seaking",
-    "Staryu",
-    "Starmie",
-    "Mr Mime",
-    "Scyther",
-    "Jynx",
-    "Electabuzz",
-    "Magmar",
-    "Pinsir",
-    "Tauros",
-    "Magikarp",
-    "Gyarados",
-    "Lapras",
-    "Ditto",
-    "Eevee",
-    "Vaporeon",
-    "Jolteon",
-    "Flareon",
-    "Porygon",
-    "Omanyte",
-    "Omastar",
-    "Kabuto",
-    "Kabutops",
-    "Aerodactyl",
-    "Snorlax",
-    "Articuno",
-    "Zapdos",
-    "Moltres",
-    "Dratini",
-    "Dragonair",
-    "Dragonite",
-    "Mewtwo",
-    "Mew"
+data class TeamUIState(
+    var teamId: Int = 0,
+    var teamName: String = "",
+    var pokemon: List<Int> = listOf(0, 0, 0, 0, 0, 0)
 )
 
+class TeamViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(TeamUIState())
+    val uiState: StateFlow<TeamUIState> = _uiState.asStateFlow()
+
+    fun setTeamId(id: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                teamId = id
+            )
+        }
+    }
+
+    fun setTeamName(name: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                teamName = name
+            )
+        }
+    }
+
+    fun setPokemon(pokemon: List<Int>) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                pokemon = pokemon
+            )
+        }
+    }
+
+    fun setTeam(team: Team) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                teamId = team.id,
+                teamName = team.name,
+                pokemon = team.pokemon
+            )
+        }
+    }
+}
+
+class Pokemon(
+    var id: Int,
+    var name: String,
+    var type1: String,
+    var type2: String
+)
+
+class Team(
+    var id: Int,
+    var name: String,
+    var pokemon: List<Int> = listOf()
+)
+
+val pokemon: List<Pokemon> = listOf(
+    Pokemon(0, "", "", ""),
+    Pokemon(1, "Bulbasaur", "Grass", "Poison"),
+    Pokemon(2, "Ivysaur", "Grass", "Poison"),
+    Pokemon(3, "Venusaur", "Grass", "Poison"),
+    Pokemon(4, "Charmander", "Fire", ""),
+    Pokemon(5, "Charmeleon", "Fire", ""),
+    Pokemon(6, "Charizard", "Fire", "Flying"),
+    Pokemon(7, "Squirtle", "Water", ""),
+    Pokemon(8, "Wartortle", "Water", ""),
+    Pokemon(9, "Blastoise", "Water", ""),
+    Pokemon(10, "Caterpie", "Bug", ""),
+    Pokemon(11, "Metapod", "Bug", ""),
+    Pokemon(12, "Butterfree", "Bug", "Flying"),
+    Pokemon(13, "Weedle", "Bug", "Poison"),
+    Pokemon(14, "Kakuna", "Bug", "Poison"),
+    Pokemon(15, "Beedrill", "Bug", "Poison"),
+    Pokemon(16, "Pikachu", "Electric", ""),
+    Pokemon(17, "Raichu", "Electric", ""),
+    Pokemon(18, "Sandshrew", "Ground", ""),
+    Pokemon(19, "Sandslash", "Ground", ""),
+    Pokemon(20, "Nidoran♀", "Poison", ""),
+    Pokemon(21, "Nidorina", "Poison", ""),
+    Pokemon(22, "Nidoqueen", "Poison", "Ground"),
+)
+
+val teams: List<Team> = listOf(
+    Team(0, "Team 1", listOf(1, 2, 3, 4, 5, 6)),
+    Team(1, "Team 2", listOf(7, 8, 9, 10, 11, 12)),
+    Team(2, "Team 3", listOf(13, 14, 15, 16, 17, 18))
+)
+
+/**
+ * A screen that displays a list of teams.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TeamSlot(
-    label: String
+    label: String,
+    value: String
 ) {
-    val options = FAKE_DATA
+    val options = pokemon
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("") }
+    var selectedText by remember { mutableStateOf(value) }
 
-    val matches = options.filter { it.contains(selectedText, true) }
+    val matches = options.filter { it.name.contains(selectedText, true) }
 
     Row(
         modifier = Modifier
@@ -234,11 +189,11 @@ fun TeamSlot(
                         matches.forEach { selectionOption ->
                             DropdownMenuItem(
                                 onClick = {
-                                    selectedText = selectionOption
+                                    selectedText = selectionOption.name
                                     expanded = false
                                 }
                             ) {
-                                Text(text = selectionOption)
+                                Text(text = selectionOption.name)
                             }
                         }
                     }
@@ -255,31 +210,213 @@ fun TeamSlot(
     }
 }
 
+/**
+ * Top app bar for the team screen
+ */
 @Composable
-fun TeamScreenAppBar() {
-    TopAppBar {
+fun TeamScreenAppBar(
+    viewModel: TeamViewModel,
+    uiState: TeamUIState,
+    onActionDrawer: () -> Unit,
+    onActionEdit: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(text = uiState.teamName) },
+        navigationIcon = {
+            IconButton(
+                onClick = { onActionDrawer() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = null
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = { onActionEdit() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = null
+                )
+            }
+        }
+    )
+}
 
+/**
+ * Drawer for the team screen
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TeamDrawer(
+    viewModel: TeamViewModel,
+    uiState: TeamUIState,
+    onButtonNewTeam: () -> Unit,
+    onButtonSetTeam: (Team) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        // Title
+        Row {
+            Text(
+                text = "Your Teams",
+                modifier = Modifier.padding(16.dp),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // List of teams
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            items(teams) { team ->
+                NavigationDrawerItem(
+                    label = { Text(text = team.name) },
+                    selected = team.id == uiState.teamId,
+                    onClick = { onButtonSetTeam(team) }
+                )
+            }
+        }
+
+        // New team button
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Button(onClick = { onButtonNewTeam() }) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = "New Team")
+            }
+        }
     }
 }
 
+/**
+ * Dialog for editing the team name
+ * @param openDialog mutable state for the dialog
+ * @param value current value of the team name
+ */
+@Composable
+fun TeamEditDialog(
+    openDialog: MutableState<Boolean>,
+    value: String,
+    onButtonSave: () -> Unit
+) {
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = { openDialog.value = false },
+            title = { Text(text = "New Team Name") },
+            text = {
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = {
+                        openDialog.value = false
+                        onButtonSave()
+                    },
+                    label = { Text(text = "Team Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                Button(onClick = { /*TODO*/ }) {
+                    Text(text = "Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { openDialog.value = false }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
+    }
+}
+
+/**
+ * Screen for the team
+ */
 @Composable
 fun TeamScreen() {
+    val viewModel: TeamViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberScaffoldState(
+        drawerState = DrawerState(
+            initialValue = DrawerValue.Closed
+        )
+    )
+    val openDialog = remember { mutableStateOf(false) }
+    val editNameValue by remember { mutableStateOf("") }
+
     Scaffold(
-        topBar = { TeamScreenAppBar() }
+        scaffoldState = scaffoldState,
+        topBar = {
+            TeamScreenAppBar(
+                viewModel = viewModel,
+                uiState = uiState,
+                onActionDrawer = {
+                    scope.launch {
+                        scaffoldState.drawerState.open()
+                    }
+                },
+                onActionEdit = {
+                    openDialog.value = true
+                }
+            )
+        },
+        drawerContent = {
+            TeamDrawer(
+                viewModel = viewModel,
+                uiState = uiState,
+                onButtonNewTeam = {
+                    scope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                },
+                onButtonSetTeam = { team ->
+                    viewModel.setTeam(team)
+
+                    scope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             Column(
                 modifier = Modifier.padding(10.dp)
             ) {
-                TeamSlot(label = "Member 1")
-                TeamSlot(label = "Member 2")
-                TeamSlot(label = "Member 3")
-                TeamSlot(label = "Member 4")
-                TeamSlot(label = "Member 5")
-                TeamSlot(label = "Member 6")
+                uiState.pokemon.forEach { pokemonID ->
+                    TeamSlot(
+                        label = "Member",
+                        value = pokemon[pokemonID].name,
+                    )
+                }
             }
         }
     }
+
+    TeamEditDialog(
+        openDialog = openDialog,
+        value = editNameValue,
+        onButtonSave = {
+            viewModel.setTeamName(editNameValue)
+        }
+    )
 }
 
 @Preview(showBackground = true)
