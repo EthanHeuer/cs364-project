@@ -24,8 +24,7 @@ enum class AppScreen(@StringRes val title: Int) {
     Search(title = R.string.page_search),
     Team(title = R.string.page_team),
     Meal(title = R.string.page_meal),
-    SelectFirstIngredient(title = R.string.first_ingredient),
-    SelectSecondIngredient(title = R.string.second_ingredient),
+    SelectIngredients(title = R.string.ingredient_list),
     MealSummary(title = R.string.meal_summary),
     Card(title = R.string.page_card),
     Detail(title = R.string.page_detail)
@@ -124,16 +123,17 @@ fun App(
             composable(route = AppScreen.Meal.name) {
                 MealScreen(
                     onMealCreate =
-                        { navController.navigate(AppScreen.SelectFirstIngredient.name) },
+                        { navController.navigate(AppScreen.SelectIngredients.name) },
                 )
             }
 
-            composable(route = AppScreen.SelectFirstIngredient.name) {
+            composable(route = AppScreen.SelectIngredients.name) {
                 MealPopupBox(
                     pokemonList = PokemonList,
                     onFirstPokemonSelected = {viewModel.addIngredient(it)},
                     selectNext = {navController.navigate(AppScreen.MealSummary.name)},
-                    title = stringResource(id = R.string.choose_pokemon_meal)
+                    title = stringResource(id = R.string.choose_pokemon_meal),
+                    reset = { resetMeal(viewModel, navController)}
                 )
             }
 
@@ -163,6 +163,14 @@ fun App(
     ){
         viewModel.resetOrder()
         navController.popBackStack(AppScreen.Meal.name, false)
+    }
+
+    fun resetMeal(
+        viewModel: PokemonViewModel,
+        navController: NavHostController
+    ){
+        viewModel.resetOrder()
+        navController.navigate(AppScreen.SelectIngredients.name)
     }
 
 @Preview(showBackground = true)

@@ -29,7 +29,7 @@ class PokemonViewModel: ViewModel() {
     }
 
     fun resetOrder(){
-        _uiState.value = PokemonUIState()
+        //_uiState.value = PokemonUIState()
         _ingredientList = mutableListOf()
     }
 }
