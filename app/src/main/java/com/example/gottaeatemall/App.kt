@@ -131,18 +131,9 @@ fun App(
             composable(route = AppScreen.SelectFirstIngredient.name) {
                 MealPopupBox(
                     pokemonList = PokemonList,
-                    onFirstPokemonSelected = {viewModel.setFirstIngredient(it)},
-                    selectNext = {navController.navigate(AppScreen.SelectSecondIngredient.name)},
-                    title = stringResource(id = R.string.choose_pokemon_meal)
-                )
-            }
-
-            composable(route = AppScreen.SelectSecondIngredient.name) {
-                MealPopupBox(
-                    pokemonList = PokemonList,
-                    onFirstPokemonSelected = {viewModel.setSecondIngredient(it)},
+                    onFirstPokemonSelected = {viewModel.addIngredient(it)},
                     selectNext = {navController.navigate(AppScreen.MealSummary.name)},
-                    title = "Choose a second Pokemon for your meal"
+                    title = stringResource(id = R.string.choose_pokemon_meal)
                 )
             }
 
