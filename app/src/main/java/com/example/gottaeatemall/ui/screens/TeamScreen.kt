@@ -4,11 +4,29 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -119,7 +137,7 @@ val teams: List<Team> = listOf(
 /**
  * A screen that displays a list of teams.
  */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamSlot(
     label: String,
@@ -165,6 +183,7 @@ fun TeamSlot(
                 // Text field for the selection
                 OutlinedTextField(
                     value = selectedText,
+                    modifier = Modifier.menuAnchor(),
                     onValueChange = { selectedText = it },
                     label = { Text(text = label) },
                     trailingIcon = {
@@ -182,19 +201,20 @@ fun TeamSlot(
                     }
                 ) {
                     if (matches.isEmpty()) {
-                        DropdownMenuItem(onClick = { }, enabled = false) {
-                            Text(text = "No matches found")
-                        }
+                        DropdownMenuItem(
+                            onClick = { },
+                            enabled = false,
+                            text = { Text(text = "No matches found") }
+                        )
                     } else {
                         matches.forEach { selectionOption ->
                             DropdownMenuItem(
                                 onClick = {
                                     selectedText = selectionOption.name
                                     expanded = false
-                                }
-                            ) {
-                                Text(text = selectionOption.name)
-                            }
+                                },
+                                text = { Text(text = selectionOption.name) }
+                            )
                         }
                     }
                 }
@@ -213,6 +233,7 @@ fun TeamSlot(
 /**
  * Top app bar for the team screen
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamScreenAppBar(
     viewModel: TeamViewModel,
@@ -309,6 +330,7 @@ fun TeamDrawer(
  * @param openDialog mutable state for the dialog
  * @param value current value of the team name
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamEditDialog(
     openDialog: MutableState<Boolean>,
@@ -347,64 +369,67 @@ fun TeamEditDialog(
 /**
  * Screen for the team
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamScreen() {
     val viewModel: TeamViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState(
-        drawerState = DrawerState(
-            initialValue = DrawerValue.Closed
-        )
-    )
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val openDialog = remember { mutableStateOf(false) }
     val editNameValue by remember { mutableStateOf("") }
 
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            TeamScreenAppBar(
-                viewModel = viewModel,
-                uiState = uiState,
-                onActionDrawer = {
-                    scope.launch {
-                        scaffoldState.drawerState.open()
-                    }
-                },
-                onActionEdit = {
-                    openDialog.value = true
-                }
-            )
-        },
+    ModalNavigationDrawer(
+        drawerState = drawerState,
         drawerContent = {
-            TeamDrawer(
-                viewModel = viewModel,
-                uiState = uiState,
-                onButtonNewTeam = {
-                    scope.launch {
-                        scaffoldState.drawerState.close()
-                    }
-                },
-                onButtonSetTeam = { team ->
-                    viewModel.setTeam(team)
+            ModalDrawerSheet {
+                TeamDrawer(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    onButtonNewTeam = {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    },
+                    onButtonSetTeam = { team ->
+                        viewModel.setTeam(team)
 
-                    scope.launch {
-                        scaffoldState.drawerState.close()
+                        scope.launch {
+                            drawerState.close()
+                        }
                     }
-                }
-            )
+                )
+
+            }
         }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            Column(
-                modifier = Modifier.padding(10.dp)
-            ) {
-                uiState.pokemon.forEach { pokemonID ->
-                    TeamSlot(
-                        label = "Member",
-                        value = pokemon[pokemonID].name,
-                    )
+    ) {
+        Scaffold(
+            topBar = {
+                TeamScreenAppBar(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    onActionDrawer = {
+                        scope.launch {
+                            drawerState.open()
+                        }
+                    },
+                    onActionEdit = {
+                        openDialog.value = true
+                    }
+                )
+            }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                Column(
+                    modifier = Modifier.padding(10.dp)
+                ) {
+                    uiState.pokemon.forEach { pokemonID ->
+                        TeamSlot(
+                            label = "Member",
+                            value = pokemon[pokemonID].name,
+                        )
+                    }
                 }
             }
         }
