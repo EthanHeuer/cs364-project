@@ -14,7 +14,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.R
 
-
+/**
+ * Creates the selecting ingredients screen with checkboxes
+ * and a popup that will occur when the user selects a poison pokemon
+ *
+ * @param pokemonList The list of available Pokemon for a meal
+ * @param onFirstPokemonSelected The Pokemon the user has selected
+ * @param selectNext The navigation to the summary screen
+ * @param reset Reset the page when the user cancels their meal
+ * @param title Title of the meal page
+ */
 @Composable
 fun MealPopupBox(
     pokemonList: List<String>,
@@ -35,14 +44,13 @@ fun MealPopupBox(
             textAlign = TextAlign.Center
         )
     }
-    Column(
-    ){
+    Column{
         Spacer(modifier = Modifier.padding(15.dp))
         var selectedPokemon by rememberSaveable { mutableStateOf("") }
         var ingredientAmount by remember { mutableStateOf(0) }
         var confirmSelection by remember { mutableStateOf(false)}
 
-        LazyColumn() {
+        LazyColumn {
             items(pokemonList) { pokemon ->
                 Row(
                     modifier =
@@ -75,7 +83,7 @@ fun MealPopupBox(
         }
 
         if (ingredientAmount == 2) {
-            Column() {
+            Column {
                 AlertDialog(
                     title = {
                         Text(text = stringResource(id = R.string.confirm_selection))
