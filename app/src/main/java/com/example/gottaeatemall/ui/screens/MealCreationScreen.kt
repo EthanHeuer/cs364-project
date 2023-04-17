@@ -10,6 +10,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.R
@@ -48,22 +50,24 @@ fun MealPopupBox(
         Spacer(modifier = Modifier.padding(15.dp))
         var selectedPokemon by rememberSaveable { mutableStateOf("") }
         var ingredientAmount by remember { mutableStateOf(0) }
-        var confirmSelection by remember { mutableStateOf(false)}
 
-        LazyColumn {
+        LazyColumn(modifier = Modifier.weight(1f, false)) {
             items(pokemonList) { pokemon ->
                 Row(
                     modifier =
-                    Modifier.clickable {
-                        selectedPokemon = pokemon
-                        onFirstPokemonSelected(pokemon)
-                    }
+                    Modifier
+                        .clickable {
+                            selectedPokemon = pokemon
+                            onFirstPokemonSelected(pokemon)
+                        }
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
                     val checked = remember { mutableStateOf(false)}
                     Checkbox(
+                        modifier = Modifier.semantics
+                        { contentDescription = pokemon },
                         checked = checked.value,
                         onCheckedChange ={
                             selectedPokemon = pokemon
@@ -81,8 +85,7 @@ fun MealPopupBox(
                 }
             }
         }
-
-        if (ingredientAmount == 2) {
+        if (ingredientAmount > 2) {
             Column {
                 AlertDialog(
                     title = {
@@ -92,7 +95,7 @@ fun MealPopupBox(
                         Text("You selected $selectedPokemon")
                     },
                     onDismissRequest = {
-                        confirmSelection = false
+                        false
                     },
                     confirmButton = {
                         Button(
@@ -110,6 +113,16 @@ fun MealPopupBox(
                     },
                 )
             }
+        }
+
+        Button(
+            onClick = selectNext,
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
+                .fillMaxWidth(),
+            enabled = (ingredientAmount == 2)
+        ) {
+            Text(text = "Next")
         }
     }
 }
