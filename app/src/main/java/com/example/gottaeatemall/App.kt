@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -16,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.gottaeatemall.data.AppDatabase
 import com.example.gottaeatemall.data.DataSource.PokemonList
 import com.example.gottaeatemall.ui.screens.*
 
@@ -84,6 +86,8 @@ fun App(
     navController: NavHostController = rememberNavController(),
     viewModel: PokemonViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+    val context = LocalContext.current
+    val database = AppDatabase.getInstance(context)
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val currentScreen = AppScreen.valueOf(
@@ -113,7 +117,7 @@ fun App(
             }
 
             composable(route = AppScreen.Search.name) {
-                SearchScreen()
+                SearchScreen(database)
             }
 
             composable(route = AppScreen.Team.name) {
