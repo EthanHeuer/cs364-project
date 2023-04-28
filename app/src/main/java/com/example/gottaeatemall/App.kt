@@ -12,7 +12,9 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -82,21 +84,21 @@ fun AppBottomBar(
             )
 
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Lock, "") },
+                icon = { Icon(imageVector = Icons.Default.Menu, "") },
                 label = { Text("Team") },
                 selected = (currentScreen.name == AppScreen.Team.name),
                 onClick = navPageTeam
             )
 
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Lock, "") },
+                icon = { Icon(imageVector = Icons.Default.Favorite, "") },
                 label = { Text("Meal") },
                 selected = (currentScreen.name == AppScreen.Meal.name),
                 onClick = navPageMeal
             )
 
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Lock, "") },
+                icon = { Icon(imageVector = Icons.Default.AccountBox, "") },
                 label = { Text("Card") },
                 selected = (currentScreen.name == AppScreen.Card.name),
                 onClick = navPageCard
