@@ -12,4 +12,6 @@
     <string name="choose_pokemon_meal">Choose a Pokemon for your meal</string>
     <string name="confirm_selection">Are you sure you want to select this Pokemon?</string>
     <string name="back">Back</string>
+    <string name="page_team_form">teamform</string>
+    <string name="page_team_form_edit">Edit Team Form</string>
 </resources>
