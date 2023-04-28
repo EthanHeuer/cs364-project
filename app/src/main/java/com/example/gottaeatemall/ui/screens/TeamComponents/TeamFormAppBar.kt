@@ -7,7 +7,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import com.example.gottaeatemall.ui.theme.DarkGray
+import com.example.gottaeatemall.ui.theme.LightGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,9 +24,14 @@ fun TeamFormTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = LightGray
                 )
             }
-        }
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = DarkGray,
+            titleContentColor = LightGray
+        )
     )
 }

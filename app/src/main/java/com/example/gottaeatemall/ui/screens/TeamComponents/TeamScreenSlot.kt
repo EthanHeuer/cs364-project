@@ -1,18 +1,22 @@
 package com.example.gottaeatemall.ui.screens.TeamComponents
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gottaeatemall.ui.theme.Gray
+import com.example.gottaeatemall.ui.theme.LightBlue
+import com.example.gottaeatemall.ui.theme.LightGray
 
 /**
  * Slot for a pokemon in the team screen
@@ -29,9 +33,13 @@ fun TeamScreenSlot(
 ) {
     Box {
         Card(
+            colors = CardDefaults.cardColors(
+                containerColor = LightBlue
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
+                .clickable { onPokemonSelected(slot) }
         ) {
             Row(
                 modifier = Modifier
@@ -41,7 +49,7 @@ fun TeamScreenSlot(
                 // Pokemon name
                 Text(
                     text = pokemonName,
-                    fontSize = 28.sp,
+                    fontSize = 28.sp
                 )
             }
         }
@@ -49,7 +57,8 @@ fun TeamScreenSlot(
         // Badge with the slot number
         Badge(
             modifier = Modifier.padding(0.dp, 16.dp, 0.dp, 0.dp),
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = Gray,
+            contentColor = LightGray
         ) {
             Text(
                 text = slot.toString(),

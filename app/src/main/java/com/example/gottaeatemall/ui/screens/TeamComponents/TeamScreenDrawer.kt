@@ -16,6 +16,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import com.example.gottaeatemall.data.Team
 import com.example.gottaeatemall.data.TeamUIState
 import com.example.gottaeatemall.data.teamsData
+import com.example.gottaeatemall.ui.theme.Gray
+import com.example.gottaeatemall.ui.theme.LightBlue
+import com.example.gottaeatemall.ui.theme.LightGray
 
 /**
  * Drawer for the team screen
@@ -60,7 +64,10 @@ fun TeamScreenDrawer(
                 NavigationDrawerItem(
                     label = { Text(text = "${team.name} (${team.id})") },
                     selected = team.id == uiState.teamId,
-                    onClick = { onButtonSetTeam(team) }
+                    onClick = { onButtonSetTeam(team) },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = LightBlue
+                    )
                 )
             }
         }
@@ -72,7 +79,11 @@ fun TeamScreenDrawer(
                 .fillMaxWidth()
         ) {
             Button(
-                onClick = { onButtonNewTeam() }
+                onClick = { onButtonNewTeam() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Gray,
+                    contentColor = LightGray
+                )
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,

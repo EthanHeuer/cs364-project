@@ -9,8 +9,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import com.example.gottaeatemall.data.TeamUIState
+import com.example.gottaeatemall.ui.theme.DarkGray
+import com.example.gottaeatemall.ui.theme.LightGray
 
 /**
  * Top app bar for the team screen
@@ -33,7 +36,8 @@ fun TeamScreenAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = LightGray
                 )
             }
         },
@@ -43,7 +47,8 @@ fun TeamScreenAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Edit,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = LightGray
                 )
             }
             IconButton(
@@ -51,9 +56,14 @@ fun TeamScreenAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = LightGray
                 )
             }
-        }
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = DarkGray,
+            titleContentColor = LightGray
+        )
     )
 }

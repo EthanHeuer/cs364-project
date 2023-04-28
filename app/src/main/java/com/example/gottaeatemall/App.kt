@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -42,6 +41,7 @@ import com.example.gottaeatemall.ui.screens.PokemonViewModel
 import com.example.gottaeatemall.ui.screens.SearchScreen
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
+import com.example.gottaeatemall.ui.theme.Red
 import java.util.UUID
 
 enum class AppScreen(@StringRes val title: Int) {
@@ -68,7 +68,7 @@ fun AppBottomBar(
 ) {
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
-        backgroundColor = Color.Red
+        backgroundColor = Red
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -117,7 +117,7 @@ fun App(
         backStackEntry?.destination?.route ?: AppScreen.Home.name
     )
 
-    var editTeamId by remember { mutableStateOf(-1) }
+    var activeTeamId by remember { mutableStateOf(0) }
 
     Scaffold(
         bottomBar = {
@@ -147,7 +147,7 @@ fun App(
                 TeamScreen(
                     onTeamCreate = { navController.navigate(AppScreen.TeamForm.name) },
                     onTeamEdit = { teamId ->
-                        editTeamId = teamId
+                        activeTeamId = teamId
                         navController.navigate(AppScreen.TeamFormEdit.name)
                     },
                     onTeamDelete = { teamId ->
@@ -188,7 +188,7 @@ fun App(
             }
 
             composable(route = AppScreen.TeamFormEdit.name) {
-                val teamData = teamsData.find { it.id == editTeamId }
+                val teamData = teamsData.find { it.id == activeTeamId }
                 TeamForm(
                     name = teamData?.name ?: "",
                     slot1 = getPokemonName(teamData?.pokemon1 ?: 0),
@@ -212,7 +212,7 @@ fun App(
                         navController.navigate(AppScreen.Team.name)
                     },
                     onSave = { team ->
-                        teamsData[editTeamId] = Team(
+                        teamsData[activeTeamId] = Team(
                             id = teamData?.id ?: 0,
                             name = team.name,
                             pokemon1 = getPokemonId(team.pokemon1),

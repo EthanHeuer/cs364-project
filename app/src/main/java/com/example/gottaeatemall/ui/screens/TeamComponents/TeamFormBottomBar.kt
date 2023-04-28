@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.ui.screens.TeamTemplate
+import com.example.gottaeatemall.ui.theme.Gray
+import com.example.gottaeatemall.ui.theme.LightGray
 
 @Composable
 fun TeamFormBottomBar(
@@ -66,8 +69,11 @@ fun TeamFormBottomBar(
                         )
                     }
                 },
-                modifier = Modifier
-                    .padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Gray,
+                    contentColor = LightGray
+                )
             ) {
                 Text(text = "Save")
             }
@@ -97,8 +103,11 @@ fun TeamFormBottomBar(
                         )
                     }
                 },
-                modifier = Modifier
-                    .padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Gray,
+                    contentColor = LightGray
+                )
             ) {
                 Text(text = "Submit")
             }
