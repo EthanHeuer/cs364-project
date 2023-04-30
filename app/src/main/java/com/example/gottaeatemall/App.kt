@@ -1,41 +1,37 @@
 package com.example.gottaeatemall
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.NavHostController
 import com.example.gottaeatemall.data.AppDatabase
 import com.example.gottaeatemall.data.DataSource.PokemonList
 import com.example.gottaeatemall.data.FakeDatabase
@@ -43,17 +39,16 @@ import com.example.gottaeatemall.data.PokemonSchema
 import com.example.gottaeatemall.data.TeamPokemonSchema
 import com.example.gottaeatemall.data.TeamSchema
 import com.example.gottaeatemall.data.TeamTemplate
-import com.example.gottaeatemall.ui.screens.*
 import com.example.gottaeatemall.ui.screens.CardScreen
 import com.example.gottaeatemall.ui.screens.DetailScreen
 import com.example.gottaeatemall.ui.screens.HomeScreen
 import com.example.gottaeatemall.ui.screens.MealPopupBox
 import com.example.gottaeatemall.ui.screens.MealScreen
-import com.example.gottaeatemall.ui.screens.MealSecondPopupBox
 import com.example.gottaeatemall.ui.screens.PokemonViewModel
 import com.example.gottaeatemall.ui.screens.SearchScreen
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
+import com.example.gottaeatemall.ui.screens.mealSummary
 import com.example.gottaeatemall.ui.theme.Red
 import java.util.UUID
 
@@ -276,25 +271,25 @@ fun App(
             composable(route = AppScreen.Meal.name) {
                 MealScreen(
                     onMealCreate =
-                        { navController.navigate(AppScreen.SelectIngredients.name) },
+                    { navController.navigate(AppScreen.SelectIngredients.name) },
                 )
             }
 
             composable(route = AppScreen.SelectIngredients.name) {
                 MealPopupBox(
                     pokemonList = PokemonList,
-                    onFirstPokemonSelected = {viewModel.addIngredient(it)},
-                    selectNext = {navController.navigate(AppScreen.MealSummary.name)},
+                    onFirstPokemonSelected = { viewModel.addIngredient(it) },
+                    selectNext = { navController.navigate(AppScreen.MealSummary.name) },
                     title = stringResource(id = R.string.choose_pokemon_meal),
-                    reset = { resetMeal(viewModel, navController)}
+                    reset = { resetMeal(viewModel, navController) }
                 )
             }
 
-            composable(route = AppScreen.MealSummary.name){
+            composable(route = AppScreen.MealSummary.name) {
                 mealSummary(mealUIState = uiState,
-                onBackButtonSelected = {
-                    finishMeal(viewModel, navController)
-                })
+                    onBackButtonSelected = {
+                        finishMeal(viewModel, navController)
+                    })
             }
 
 
@@ -310,21 +305,21 @@ fun App(
     }
 }
 
-    fun finishMeal(
+fun finishMeal(
     viewModel: PokemonViewModel,
     navController: NavHostController
-    ){
-        viewModel.resetOrder()
-        navController.popBackStack(AppScreen.Meal.name, false)
-    }
+) {
+    viewModel.resetOrder()
+    navController.popBackStack(AppScreen.Meal.name, false)
+}
 
-    fun resetMeal(
-        viewModel: PokemonViewModel,
-        navController: NavHostController
-    ){
-        viewModel.resetOrder()
-        navController.navigate(AppScreen.SelectIngredients.name)
-    }
+fun resetMeal(
+    viewModel: PokemonViewModel,
+    navController: NavHostController
+) {
+    viewModel.resetOrder()
+    navController.navigate(AppScreen.SelectIngredients.name)
+}
 
 @Preview(showBackground = true)
 @Composable
