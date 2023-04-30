@@ -15,6 +15,11 @@ import com.example.gottaeatemall.ui.screens.TeamTemplate
 import com.example.gottaeatemall.ui.theme.Gray
 import com.example.gottaeatemall.ui.theme.LightGray
 
+/**
+ * Component for displaying a secondary button.
+ * @param label The label to display on the button.
+ * @param onClick The callback to call when the user clicks the button.
+ */
 @Composable
 fun SecondaryButton(
     label: String,
@@ -32,6 +37,14 @@ fun SecondaryButton(
     }
 }
 
+/**
+ * Component for displaying the bottom bar in the team form.
+ * @param teamTemplate The team template to display.
+ * @param onSubmit The callback to call when the user clicks the submit button.
+ * @param onSave The callback to call when the user clicks the save button.
+ * @param onCancel The callback to call when the user clicks the cancel button.
+ * @param editMode Whether the team is in edit mode or not.
+ */
 @Composable
 fun TeamFormBottomBar(
     teamTemplate: TeamTemplate = TeamTemplate(),

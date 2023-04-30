@@ -1,6 +1,7 @@
 package com.example.gottaeatemall.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalDrawerSheet
@@ -133,15 +134,17 @@ fun TeamScreen(
             }
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
-                Column(
-                    modifier = Modifier.padding(10.dp)
+                LazyColumn(
+                    modifier = Modifier.padding(8.dp)
                 ) {
-                    for (i in 0..5) {
-                        TeamScreenSlot(
-                            slot = i + 1,
-                            pokemon = uiState.pokemon[i],
-                            onPokemonSelected = {}
-                        )
+                    item {
+                        for (i in 0..5) {
+                            TeamScreenSlot(
+                                slot = i + 1,
+                                pokemon = uiState.pokemon[i],
+                                onPokemonSelected = {}
+                            )
+                        }
                     }
                 }
             }

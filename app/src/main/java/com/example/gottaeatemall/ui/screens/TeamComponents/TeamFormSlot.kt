@@ -25,7 +25,11 @@ import com.example.gottaeatemall.data.FakeDatabase
 import com.example.gottaeatemall.data.PokemonSchema
 
 /**
- * A screen that displays a list of teams.
+ * Component for displaying a slot in the team form.
+ * @param label The label for the slot.
+ * @param value The value of the slot.
+ * @param onValueChange The callback to call when the value of the slot changes.
+ * @param onSubmit The callback to call when the user submits the slot.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

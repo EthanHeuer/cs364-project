@@ -12,6 +12,11 @@ import androidx.compose.runtime.Composable
 import com.example.gottaeatemall.ui.theme.DarkGray
 import com.example.gottaeatemall.ui.theme.LightGray
 
+/**
+ * Component for displaying the top bar in the team form.
+ * @param title The title to display.
+ * @param onBack The callback to call when the user clicks the back button.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamFormTopBar(

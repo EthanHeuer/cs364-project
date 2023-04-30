@@ -32,7 +32,10 @@ import com.example.gottaeatemall.ui.theme.LightBlue
 import com.example.gottaeatemall.ui.theme.LightGray
 
 /**
- * Drawer for the team screen
+ * Component for displaying the drawer in the team screen.
+ * @param uiState The state of the team screen.
+ * @param onButtonNewTeam The callback to call when the user clicks the new team button.
+ * @param onButtonSetTeam The callback to call when the user clicks a team.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

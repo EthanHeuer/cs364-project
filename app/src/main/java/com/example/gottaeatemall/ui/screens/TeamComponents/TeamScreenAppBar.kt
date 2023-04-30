@@ -16,7 +16,11 @@ import com.example.gottaeatemall.ui.theme.DarkGray
 import com.example.gottaeatemall.ui.theme.LightGray
 
 /**
- * Top app bar for the team screen
+ * Component for displaying the app bar in the team screen.
+ * @param uiState The state of the team screen.
+ * @param onDrawer The callback to call when the user clicks the drawer button.
+ * @param onEdit The callback to call when the user clicks the edit button.
+ * @param onDelete The callback to call when the user clicks the delete button.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,8 +35,9 @@ fun TeamScreenAppBar(
             Text(text = uiState.name)
         },
         navigationIcon = {
+            // Drawer button
             IconButton(
-                onClick = { onDrawer() }
+                onClick = onDrawer
             ) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
@@ -42,8 +47,9 @@ fun TeamScreenAppBar(
             }
         },
         actions = {
+            // Edit button
             IconButton(
-                onClick = { onEdit() }
+                onClick = onEdit
             ) {
                 Icon(
                     imageVector = Icons.Filled.Edit,
@@ -51,8 +57,10 @@ fun TeamScreenAppBar(
                     tint = LightGray
                 )
             }
+
+            // Delete button
             IconButton(
-                onClick = { onDelete() }
+                onClick = onDelete
             ) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
