@@ -60,7 +60,8 @@ fun TeamScreenAppBar(
 
             // Delete button
             IconButton(
-                onClick = onDelete
+                onClick = onDelete,
+                enabled = false
             ) {
                 Icon(
                     imageVector = Icons.Filled.Delete,

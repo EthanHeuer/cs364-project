@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -121,7 +120,6 @@ fun App(
     )
 
     var activeTeamId by remember { mutableStateOf(1) }
-    val deleteTeamDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -136,7 +134,7 @@ fun App(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = AppScreen.Team.name,
+            startDestination = AppScreen.Home.name,
             modifier = modifier.padding(innerPadding)
         ) {
             composable(route = AppScreen.Home.name) {
@@ -154,20 +152,6 @@ fun App(
                     onTeamEdit = { teamId ->
                         activeTeamId = teamId
                         navController.navigate(AppScreen.TeamFormEdit.name)
-                    },
-                    onTeamDelete = { teamId ->
-                        deleteTeamDialog.value = true
-                        /*
-                        FakeDatabase.getInstance().queryDelete<TeamSchema>(
-                            from = "teams",
-                            where = { it.id == teamId }
-                        )
-
-                        FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
-                            from = "team_pokemon",
-                            where = { it.teamId == teamId }
-                        )
-                        */
                     }
                 )
             }
@@ -323,27 +307,6 @@ fun App(
                 DetailScreen()
             }
         }
-    }
-
-    if (deleteTeamDialog.value) {
-        AlertDialog(
-            title = { androidx.compose.material3.Text("Delete Team") },
-            text = {
-                androidx.compose.material3.Text(
-                    text = "Are you sure you want to delete this team? This action cannot be undone!",
-                    softWrap = true
-                )
-            },
-            onDismissRequest = {
-            },
-            dismissButton = {
-                deleteTeamDialog.value = false
-                androidx.compose.material3.Text("Cancel")
-            },
-            confirmButton = {
-                androidx.compose.material3.Text("Confirm")
-            }
-        )
     }
 }
 
