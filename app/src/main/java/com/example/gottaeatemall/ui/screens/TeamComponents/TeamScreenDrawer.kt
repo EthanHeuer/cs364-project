@@ -24,9 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gottaeatemall.data.Team
+import com.example.gottaeatemall.data.FakeDatabase
+import com.example.gottaeatemall.data.TeamSchema
 import com.example.gottaeatemall.data.TeamUIState
-import com.example.gottaeatemall.data.teamsData
 import com.example.gottaeatemall.ui.theme.Gray
 import com.example.gottaeatemall.ui.theme.LightBlue
 import com.example.gottaeatemall.ui.theme.LightGray
@@ -39,8 +39,12 @@ import com.example.gottaeatemall.ui.theme.LightGray
 fun TeamScreenDrawer(
     uiState: TeamUIState,
     onButtonNewTeam: () -> Unit,
-    onButtonSetTeam: (Team) -> Unit
+    onButtonSetTeam: (Int) -> Unit
 ) {
+    val teamsData = FakeDatabase.getInstance().querySelect<TeamSchema>(
+        from = "teams"
+    )
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -49,7 +53,7 @@ fun TeamScreenDrawer(
             Text(
                 text = "Your Teams",
                 modifier = Modifier.padding(16.dp),
-                fontSize = 18.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -57,14 +61,20 @@ fun TeamScreenDrawer(
         // List of teams
         LazyColumn(
             modifier = Modifier
+                .padding(8.dp)
                 .fillMaxWidth()
                 .weight(1f)
         ) {
             items(teamsData) { team ->
                 NavigationDrawerItem(
-                    label = { Text(text = "${team.name} (${team.id})") },
+                    label = {
+                        Text(
+                            text = team.name,
+                            fontSize = 20.sp
+                        )
+                    },
                     selected = team.id == uiState.teamId,
-                    onClick = { onButtonSetTeam(team) },
+                    onClick = { onButtonSetTeam(team.id) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = LightBlue
                     )
@@ -76,6 +86,7 @@ fun TeamScreenDrawer(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .padding(8.dp)
                 .fillMaxWidth()
         ) {
             Button(

@@ -21,7 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.gottaeatemall.data.pokemonData
+import com.example.gottaeatemall.data.FakeDatabase
+import com.example.gottaeatemall.data.PokemonSchema
 
 /**
  * A screen that displays a list of teams.
@@ -34,7 +35,9 @@ fun TeamFormSlot(
     onValueChange: (String) -> Unit,
     onSubmit: (String) -> Unit
 ) {
-    val options = pokemonData
+    val options = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+        from = "pokemon"
+    )
     var expanded by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 

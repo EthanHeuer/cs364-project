@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,10 +30,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.gottaeatemall.data.Team
-import com.example.gottaeatemall.data.getPokemonId
-import com.example.gottaeatemall.data.getPokemonName
-import com.example.gottaeatemall.data.teamsData
+import com.example.gottaeatemall.data.FakeDatabase
+import com.example.gottaeatemall.data.PokemonSchema
+import com.example.gottaeatemall.data.TeamPokemonSchema
+import com.example.gottaeatemall.data.TeamSchema
 import com.example.gottaeatemall.ui.screens.CardScreen
 import com.example.gottaeatemall.ui.screens.DetailScreen
 import com.example.gottaeatemall.ui.screens.HomeScreen
@@ -119,7 +120,8 @@ fun App(
         backStackEntry?.destination?.route ?: AppScreen.Home.name
     )
 
-    var activeTeamId by remember { mutableStateOf(0) }
+    var activeTeamId by remember { mutableStateOf(1) }
+    var deleteTeamDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -134,7 +136,7 @@ fun App(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = AppScreen.Home.name,
+            startDestination = AppScreen.Team.name,
             modifier = modifier.padding(innerPadding)
         ) {
             composable(route = AppScreen.Home.name) {
@@ -147,87 +149,110 @@ fun App(
 
             composable(route = AppScreen.Team.name) {
                 TeamScreen(
+                    activeTeamId = activeTeamId,
                     onTeamCreate = { navController.navigate(AppScreen.TeamForm.name) },
                     onTeamEdit = { teamId ->
                         activeTeamId = teamId
                         navController.navigate(AppScreen.TeamFormEdit.name)
                     },
                     onTeamDelete = { teamId ->
+                        deleteTeamDialog.value = true
+                        /*
+                        FakeDatabase.getInstance().queryDelete<TeamSchema>(
+                            from = "teams",
+                            where = { it.id == teamId }
+                        )
 
+                        FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
+                            from = "team_pokemon",
+                            where = { it.teamId == teamId }
+                        )
+                        */
                     }
                 )
             }
 
             composable(route = AppScreen.TeamForm.name) {
                 TeamForm(
-                    name = "",
-                    slot1 = "",
-                    slot2 = "",
-                    slot3 = "",
-                    slot4 = "",
-                    slot5 = "",
-                    slot6 = "",
                     onSubmit = { newTeam ->
-                        val team = Team(
-                            id = UUID.randomUUID().hashCode(),
-                            name = newTeam.name,
-                            pokemon1 = getPokemonId(newTeam.pokemon1),
-                            pokemon2 = getPokemonId(newTeam.pokemon2),
-                            pokemon3 = getPokemonId(newTeam.pokemon3),
-                            pokemon4 = getPokemonId(newTeam.pokemon4),
-                            pokemon5 = getPokemonId(newTeam.pokemon5),
-                            pokemon6 = getPokemonId(newTeam.pokemon6)
+                        val teamId = UUID.randomUUID().hashCode()
+
+                        FakeDatabase.getInstance().queryInsert(
+                            into = "teams",
+                            values = TeamSchema(
+                                id = teamId,
+                                name = newTeam.name
+                            )
                         )
-                        println(team)
-                        teamsData.add(team)
+
+                        for (i in 0..5) {
+                            val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+                                from = "pokemon",
+                                where = { it.name == newTeam.pokemon[i] }
+                            ).first()
+
+                            FakeDatabase.getInstance().queryInsert(
+                                into = "team_pokemon",
+                                values = TeamPokemonSchema(
+                                    id = UUID.randomUUID().hashCode(),
+                                    teamId = teamId,
+                                    slotId = i + 1,
+                                    pokemonId = pokemon.id
+                                )
+                            )
+                        }
+
                         navController.navigate(AppScreen.Team.name)
                     },
                     onSave = { },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
-                    onBack = { navController.navigate(AppScreen.Team.name) },
                     editMode = false
                 )
             }
 
             composable(route = AppScreen.TeamFormEdit.name) {
-                val teamData = teamsData.find { it.id == activeTeamId }
                 TeamForm(
-                    name = teamData?.name ?: "",
-                    slot1 = getPokemonName(teamData?.pokemon1 ?: 0),
-                    slot2 = getPokemonName(teamData?.pokemon2 ?: 0),
-                    slot3 = getPokemonName(teamData?.pokemon3 ?: 0),
-                    slot4 = getPokemonName(teamData?.pokemon4 ?: 0),
-                    slot5 = getPokemonName(teamData?.pokemon5 ?: 0),
-                    slot6 = getPokemonName(teamData?.pokemon6 ?: 0),
-                    onSubmit = { newTeam ->
-                        val team = Team(
-                            id = UUID.randomUUID().hashCode(),
-                            name = newTeam.name,
-                            pokemon1 = getPokemonId(newTeam.pokemon1),
-                            pokemon2 = getPokemonId(newTeam.pokemon2),
-                            pokemon3 = getPokemonId(newTeam.pokemon3),
-                            pokemon4 = getPokemonId(newTeam.pokemon4),
-                            pokemon5 = getPokemonId(newTeam.pokemon5),
-                            pokemon6 = getPokemonId(newTeam.pokemon6)
-                        )
-                        teamsData.add(team)
-                        navController.navigate(AppScreen.Team.name)
-                    },
+                    onSubmit = {},
                     onSave = { team ->
-                        teamsData[activeTeamId] = Team(
-                            id = teamData?.id ?: 0,
-                            name = team.name,
-                            pokemon1 = getPokemonId(team.pokemon1),
-                            pokemon2 = getPokemonId(team.pokemon2),
-                            pokemon3 = getPokemonId(team.pokemon3),
-                            pokemon4 = getPokemonId(team.pokemon4),
-                            pokemon5 = getPokemonId(team.pokemon5),
-                            pokemon6 = getPokemonId(team.pokemon6)
+                        println("SAVE TEAM")
+                        println(team.name)
+
+                        for (i in 0..5) {
+                            println(team.pokemon[i])
+                        }
+
+                        // Update team name
+                        FakeDatabase.getInstance().queryUpdate(
+                            tableName = "teams",
+                            values = TeamSchema(
+                                id = activeTeamId,
+                                name = team.name
+                            ),
+                            where = { it.id == activeTeamId }
                         )
+
+                        // Update team pokemon
+                        for (i in 0..5) {
+                            val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+                                from = "pokemon",
+                                where = { it.name == team.pokemon[i] }
+                            ).first()
+
+                            FakeDatabase.getInstance().queryUpdate(
+                                tableName = "team_pokemon",
+                                values = TeamPokemonSchema(
+                                    id = UUID.randomUUID().hashCode(),
+                                    teamId = activeTeamId,
+                                    slotId = i + 1,
+                                    pokemonId = pokemon.id
+                                ),
+                                where = { it.teamId == activeTeamId && it.slotId == i + 1 }
+                            )
+                        }
+
                         navController.navigate(AppScreen.Team.name)
                     },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
-                    onBack = { navController.navigate(AppScreen.Team.name) },
                     editMode = true
                 )
             }
@@ -279,6 +304,27 @@ fun App(
                 DetailScreen()
             }
         }
+    }
+
+    if (deleteTeamDialog.value) {
+        AlertDialog(
+            title = { androidx.compose.material3.Text("Delete Team") },
+            text = {
+                androidx.compose.material3.Text(
+                    text = "Are you sure you want to delete this team? This action cannot be undone!",
+                    softWrap = true
+                )
+            },
+            onDismissRequest = {
+            },
+            dismissButton = {
+                deleteTeamDialog.value = false
+                androidx.compose.material3.Text("Cancel")
+            },
+            confirmButton = {
+                androidx.compose.material3.Text("Confirm")
+            }
+        )
     }
 }
 

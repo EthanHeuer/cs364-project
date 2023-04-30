@@ -28,7 +28,7 @@ fun TeamScreenAppBar(
 ) {
     TopAppBar(
         title = {
-            Text(text = uiState.teamName)
+            Text(text = uiState.name)
         },
         navigationIcon = {
             IconButton(

@@ -1,12 +1,19 @@
 package com.example.gottaeatemall.data
 
+val tempData = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+    from = "pokemon",
+    where = { it.id == 1 }
+).first()
+
 data class TeamUIState(
     var teamId: Int = 0,
-    var teamName: String = "",
-    var pokemon1: String = "",
-    var pokemon2: String = "",
-    var pokemon3: String = "",
-    var pokemon4: String = "",
-    var pokemon5: String = "",
-    var pokemon6: String = ""
+    var name: String = "",
+    var pokemon: List<PokemonSchema> = listOf(
+        tempData,
+        tempData,
+        tempData,
+        tempData,
+        tempData,
+        tempData
+    )
 )

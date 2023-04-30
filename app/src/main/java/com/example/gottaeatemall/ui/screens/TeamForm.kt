@@ -20,53 +20,45 @@ import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormSlot
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormTopBar
 
 data class TeamTemplate(
-    val name: String,
-    val pokemon1: String,
-    val pokemon2: String,
-    val pokemon3: String,
-    val pokemon4: String,
-    val pokemon5: String,
-    val pokemon6: String
+    val name: String = "",
+    val pokemon: List<String> = listOf("", "", "", "", "", "")
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamForm(
-    name: String,
-    slot1: String,
-    slot2: String,
-    slot3: String,
-    slot4: String,
-    slot5: String,
-    slot6: String,
-    onBack: () -> Unit,
+    teamTemplate: TeamTemplate = TeamTemplate(),
     onSubmit: (TeamTemplate) -> Unit,
     onSave: (TeamTemplate) -> Unit,
     onCancel: () -> Unit,
     editMode: Boolean
 ) {
-    var nameValue by remember { mutableStateOf(name) }
-    var slot1Value by remember { mutableStateOf(slot1) }
-    var slot2Value by remember { mutableStateOf(slot2) }
-    var slot3Value by remember { mutableStateOf(slot3) }
-    var slot4Value by remember { mutableStateOf(slot4) }
-    var slot5Value by remember { mutableStateOf(slot5) }
-    var slot6Value by remember { mutableStateOf(slot6) }
+    var nameValue by remember { mutableStateOf(teamTemplate.name) }
+    var slot1Value by remember { mutableStateOf(teamTemplate.pokemon[0]) }
+    var slot2Value by remember { mutableStateOf(teamTemplate.pokemon[1]) }
+    var slot3Value by remember { mutableStateOf(teamTemplate.pokemon[2]) }
+    var slot4Value by remember { mutableStateOf(teamTemplate.pokemon[3]) }
+    var slot5Value by remember { mutableStateOf(teamTemplate.pokemon[4]) }
+    var slot6Value by remember { mutableStateOf(teamTemplate.pokemon[5]) }
 
     Scaffold(
         topBar = {
             val title = if (editMode) "Edit Team" else "Create New Team"
-            TeamFormTopBar(title = title, onBack = onBack)
+            TeamFormTopBar(title = title, onBack = onCancel)
         },
         bottomBar = {
             TeamFormBottomBar(
-                name = nameValue,
-                slot1 = slot1Value,
-                slot2 = slot2Value,
-                slot3 = slot3Value,
-                slot4 = slot4Value,
-                slot5 = slot5Value,
-                slot6 = slot6Value,
+                teamTemplate = TeamTemplate(
+                    nameValue,
+                    listOf(
+                        slot1Value,
+                        slot2Value,
+                        slot3Value,
+                        slot4Value,
+                        slot5Value,
+                        slot6Value
+                    )
+                ),
                 onSubmit = onSubmit,
                 onSave = onSave,
                 onCancel = onCancel,

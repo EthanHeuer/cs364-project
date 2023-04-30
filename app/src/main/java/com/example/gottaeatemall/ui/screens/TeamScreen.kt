@@ -12,10 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gottaeatemall.data.Team
+import com.example.gottaeatemall.data.FakeDatabase
+import com.example.gottaeatemall.data.PokemonSchema
+import com.example.gottaeatemall.data.TeamPokemonSchema
+import com.example.gottaeatemall.data.TeamSchema
 import com.example.gottaeatemall.data.TeamUIState
-import com.example.gottaeatemall.data.getPokemonName
-import com.example.gottaeatemall.data.teamsData
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenAppBar
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenDrawer
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenSlot
@@ -29,17 +30,30 @@ class TeamViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(TeamUIState())
     val uiState: StateFlow<TeamUIState> = _uiState.asStateFlow()
 
-    fun setTeam(team: Team) {
+    fun setTeam(teamId: Int) {
+        val team = FakeDatabase.getInstance().querySelect<TeamSchema>(
+            from = "teams",
+            where = { it.id == teamId }
+        ).first()
+
+        val teamPokemon = FakeDatabase.getInstance().querySelect<TeamPokemonSchema>(
+            from = "team_pokemon",
+            where = { it.teamId == team.id },
+            orderBy = { it.slotId }
+        )
+
+        val pokemon = teamPokemon.map { slot ->
+            FakeDatabase.getInstance().querySelect<PokemonSchema>(
+                from = "pokemon",
+                where = { it.id == slot.pokemonId }
+            ).first()
+        }
+
         _uiState.update { uiState ->
             uiState.copy(
                 teamId = team.id,
-                teamName = team.name,
-                pokemon1 = getPokemonName(team.pokemon1),
-                pokemon2 = getPokemonName(team.pokemon2),
-                pokemon3 = getPokemonName(team.pokemon3),
-                pokemon4 = getPokemonName(team.pokemon4),
-                pokemon5 = getPokemonName(team.pokemon5),
-                pokemon6 = getPokemonName(team.pokemon6)
+                name = team.name,
+                pokemon = pokemon
             )
         }
     }
@@ -51,17 +65,33 @@ class TeamViewModel : ViewModel() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamScreen(
+    activeTeamId: Int,
     onTeamCreate: () -> Unit = {},
     onTeamEdit: (Int) -> Unit,
     onTeamDelete: (Int) -> Unit
 ) {
+    val td = FakeDatabase.getInstance().querySelect<TeamPokemonSchema>(
+        from = "team_pokemon",
+        where = { it.teamId == activeTeamId },
+        orderBy = { it.slotId }
+    )
+
+    for (slot in td) {
+        val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+            from = "pokemon",
+            where = { it.id == slot.pokemonId }
+        ).first()
+
+        println("${slot.slotId} ${slot.pokemonId} -> ${pokemon.name} ${pokemon.id}")
+    }
+
     val viewModel: TeamViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
-    viewModel.setTeam(teamsData[0])
+    viewModel.setTeam(activeTeamId)
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -76,8 +106,8 @@ fun TeamScreen(
                             drawerState.close()
                         }
                     },
-                    onButtonSetTeam = { team ->
-                        viewModel.setTeam(team)
+                    onButtonSetTeam = { teamId ->
+                        viewModel.setTeam(teamId)
 
                         scope.launch {
                             drawerState.close()
@@ -106,12 +136,13 @@ fun TeamScreen(
                 Column(
                     modifier = Modifier.padding(10.dp)
                 ) {
-                    TeamScreenSlot(slot = 1, pokemonName = uiState.pokemon1, onPokemonSelected = {})
-                    TeamScreenSlot(slot = 2, pokemonName = uiState.pokemon2, onPokemonSelected = {})
-                    TeamScreenSlot(slot = 3, pokemonName = uiState.pokemon3, onPokemonSelected = {})
-                    TeamScreenSlot(slot = 4, pokemonName = uiState.pokemon4, onPokemonSelected = {})
-                    TeamScreenSlot(slot = 5, pokemonName = uiState.pokemon5, onPokemonSelected = {})
-                    TeamScreenSlot(slot = 6, pokemonName = uiState.pokemon6, onPokemonSelected = {})
+                    for (i in 0..5) {
+                        TeamScreenSlot(
+                            slot = i + 1,
+                            pokemon = uiState.pokemon[i],
+                            onPokemonSelected = {}
+                        )
+                    }
                 }
             }
         }

@@ -16,14 +16,25 @@ import com.example.gottaeatemall.ui.theme.Gray
 import com.example.gottaeatemall.ui.theme.LightGray
 
 @Composable
+fun SecondaryButton(
+    label: String,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = { onClick() },
+        modifier = Modifier.padding(10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Gray,
+            contentColor = LightGray
+        )
+    ) {
+        Text(text = label)
+    }
+}
+
+@Composable
 fun TeamFormBottomBar(
-    name: String,
-    slot1: String,
-    slot2: String,
-    slot3: String,
-    slot4: String,
-    slot5: String,
-    slot6: String,
+    teamTemplate: TeamTemplate = TeamTemplate(),
     onSubmit: (TeamTemplate) -> Unit,
     onSave: (TeamTemplate) -> Unit,
     onCancel: () -> Unit,
@@ -38,79 +49,47 @@ fun TeamFormBottomBar(
         OutlinedButton(
             onClick = onCancel,
             modifier = Modifier
-                .padding(10.dp)
+                .padding(8.dp)
         ) {
             Text(text = "Cancel")
         }
 
         if (editMode) {
             // Save button
-            Button(
+            SecondaryButton(
+                label = "Save",
                 onClick = {
                     if (
-                        name.isNotEmpty() &&
-                        slot1.isNotEmpty() &&
-                        slot2.isNotEmpty() &&
-                        slot3.isNotEmpty() &&
-                        slot4.isNotEmpty() &&
-                        slot5.isNotEmpty() &&
-                        slot6.isNotEmpty()
+                        teamTemplate.name.isNotEmpty() &&
+                        teamTemplate.pokemon.all { it.isNotEmpty() }
                     ) {
                         onSave(
                             TeamTemplate(
-                                name,
-                                slot1,
-                                slot2,
-                                slot3,
-                                slot4,
-                                slot5,
-                                slot6
+                                teamTemplate.name,
+                                teamTemplate.pokemon
                             )
                         )
                     }
-                },
-                modifier = Modifier.padding(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gray,
-                    contentColor = LightGray
-                )
-            ) {
-                Text(text = "Save")
-            }
+                }
+            )
         } else {
             // Submit button
-            Button(
+            SecondaryButton(
+                label = "Submit",
                 onClick = {
                     if (
-                        name.isNotEmpty() &&
-                        slot1.isNotEmpty() &&
-                        slot2.isNotEmpty() &&
-                        slot3.isNotEmpty() &&
-                        slot4.isNotEmpty() &&
-                        slot5.isNotEmpty() &&
-                        slot6.isNotEmpty()
+                        teamTemplate.name.isNotEmpty() &&
+                        teamTemplate.pokemon.all { it.isNotEmpty() }
                     ) {
                         onSubmit(
                             TeamTemplate(
-                                name,
-                                slot1,
-                                slot2,
-                                slot3,
-                                slot4,
-                                slot5,
-                                slot6
+                                teamTemplate.name,
+                                teamTemplate.pokemon
                             )
                         )
                     }
-                },
-                modifier = Modifier.padding(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gray,
-                    contentColor = LightGray
-                )
-            ) {
-                Text(text = "Submit")
-            }
+                }
+            )
         }
     }
 }
