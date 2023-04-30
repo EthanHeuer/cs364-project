@@ -15,15 +15,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.gottaeatemall.data.TeamTemplate
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormBottomBar
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormSlot
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormTopBar
 
-data class TeamTemplate(
-    var name: String = "",
-    val pokemon: List<String> = listOf("", "", "", "", "", "")
-)
-
+/**
+ * Component for displaying a form for creating or editing a team.
+ * @param teamTemplate The team template to use for the form.
+ * @param onSubmit The callback to call when the user submits the form.
+ * @param onSave The callback to call when the user saves the form.
+ * @param onCancel The callback to call when the user cancels the form.
+ * @param editMode Whether the team is in edit mode or not.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamForm(

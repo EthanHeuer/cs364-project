@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.gottaeatemall.ui.screens.TeamTemplate
+import com.example.gottaeatemall.data.TeamTemplate
 import com.example.gottaeatemall.ui.theme.Gray
 import com.example.gottaeatemall.ui.theme.LightGray
 

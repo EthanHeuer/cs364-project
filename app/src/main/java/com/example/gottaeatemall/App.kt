@@ -34,6 +34,7 @@ import com.example.gottaeatemall.data.FakeDatabase
 import com.example.gottaeatemall.data.PokemonSchema
 import com.example.gottaeatemall.data.TeamPokemonSchema
 import com.example.gottaeatemall.data.TeamSchema
+import com.example.gottaeatemall.data.TeamTemplate
 import com.example.gottaeatemall.ui.screens.CardScreen
 import com.example.gottaeatemall.ui.screens.DetailScreen
 import com.example.gottaeatemall.ui.screens.HomeScreen
@@ -44,7 +45,6 @@ import com.example.gottaeatemall.ui.screens.PokemonViewModel
 import com.example.gottaeatemall.ui.screens.SearchScreen
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
-import com.example.gottaeatemall.ui.screens.TeamTemplate
 import com.example.gottaeatemall.ui.theme.Red
 import java.util.UUID
 
@@ -67,8 +67,7 @@ fun AppBottomBar(
     navPageSearch: () -> Unit = {},
     navPageTeam: () -> Unit = {},
     navPageMeal: () -> Unit = {},
-    navPageCard: () -> Unit = {},
-    modifier: Modifier = Modifier
+    navPageCard: () -> Unit = {}
 ) {
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
@@ -76,7 +75,7 @@ fun AppBottomBar(
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
-            modifier = modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Default.Search, "") },
@@ -122,7 +121,7 @@ fun App(
     )
 
     var activeTeamId by remember { mutableStateOf(1) }
-    var deleteTeamDialog = remember { mutableStateOf(false) }
+    val deleteTeamDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -240,7 +239,7 @@ fun App(
                 TeamForm(
                     teamTemplate = teamTemplate,
                     onSubmit = {},
-                    onSave = { team ->
+                    onSave = { updatedTeam ->
                         // Update team name
                         FakeDatabase.getInstance().queryUpdate(
                             tableName = "teams",
@@ -255,7 +254,7 @@ fun App(
                         for (i in 0..5) {
                             val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
                                 from = "pokemon",
-                                where = { it.name == team.pokemon[i] }
+                                where = { it.name == updatedTeam.pokemon[i] }
                             ).first()
 
                             FakeDatabase.getInstance().queryUpdate(

@@ -11,57 +11,19 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gottaeatemall.data.FakeDatabase
-import com.example.gottaeatemall.data.PokemonSchema
-import com.example.gottaeatemall.data.TeamPokemonSchema
-import com.example.gottaeatemall.data.TeamSchema
-import com.example.gottaeatemall.data.TeamUIState
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenAppBar
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenDrawer
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenSlot
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.example.gottaeatemall.ui.screens.TeamComponents.TeamViewModel
 import kotlinx.coroutines.launch
 
-class TeamViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(TeamUIState())
-    val uiState: StateFlow<TeamUIState> = _uiState.asStateFlow()
-
-    fun setTeam(teamId: Int) {
-        val team = FakeDatabase.getInstance().querySelect<TeamSchema>(
-            from = "teams",
-            where = { it.id == teamId }
-        ).first()
-
-        val teamPokemon = FakeDatabase.getInstance().querySelect<TeamPokemonSchema>(
-            from = "team_pokemon",
-            where = { it.teamId == team.id },
-            orderBy = { it.slotId }
-        )
-
-        val pokemon = teamPokemon.map { slot ->
-            FakeDatabase.getInstance().querySelect<PokemonSchema>(
-                from = "pokemon",
-                where = { it.id == slot.pokemonId }
-            ).first()
-        }
-
-        _uiState.update { uiState ->
-            uiState.copy(
-                teamId = team.id,
-                name = team.name,
-                pokemon = pokemon
-            )
-        }
-    }
-}
-
 /**
- * Screen for the team
+ * Screen for displaying a team
+ * @param activeTeamId The id of the team to be displayed
+ * @param onTeamCreate Callback for when a new team is created
+ * @param onTeamEdit Callback for when a team is edited
+ * @param onTeamDelete Callback for when a team is deleted
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,28 +33,12 @@ fun TeamScreen(
     onTeamEdit: (Int) -> Unit,
     onTeamDelete: (Int) -> Unit
 ) {
-    val td = FakeDatabase.getInstance().querySelect<TeamPokemonSchema>(
-        from = "team_pokemon",
-        where = { it.teamId == activeTeamId },
-        orderBy = { it.slotId }
-    )
-
-    for (slot in td) {
-        val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
-            from = "pokemon",
-            where = { it.id == slot.pokemonId }
-        ).first()
-
-        println("${slot.slotId} ${slot.pokemonId} -> ${pokemon.name} ${pokemon.id}")
-    }
-
     val viewModel: TeamViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
+    viewModel.setTeam(activeTeamId)
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-
-    viewModel.setTeam(activeTeamId)
 
     ModalNavigationDrawer(
         drawerState = drawerState,
