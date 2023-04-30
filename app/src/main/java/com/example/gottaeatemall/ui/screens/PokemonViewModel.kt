@@ -12,15 +12,24 @@ class PokemonViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(PokemonUIState())
     val uiState: StateFlow<PokemonUIState> = _uiState.asStateFlow()
 
-    fun setFirstIngredient(sFI: String){
-        _uiState.update { currentState ->
-            currentState.copy(firstIngredient = sFI)
+    var _ingredientList = mutableListOf<String>()
+    fun addIngredient(ingredient: String){
+        if (_ingredientList.contains(ingredient)){
+            _ingredientList.remove(ingredient)
+            _uiState.update {currentState ->
+                currentState.copy(ingredients = _ingredientList)
+            }
+        }
+        else{
+            _ingredientList.add(ingredient)
+            _uiState.update {currentState ->
+                currentState.copy(ingredients = _ingredientList)
+            }
         }
     }
 
-    fun setSecondIngredient(sSI: String){
-        _uiState.update { currentState ->
-            currentState.copy(secondIngredient = sSI)
-        }
+    fun resetOrder(){
+        //_uiState.value = PokemonUIState()
+        _ingredientList = mutableListOf()
     }
 }
