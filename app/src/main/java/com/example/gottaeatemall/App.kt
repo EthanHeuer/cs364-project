@@ -44,6 +44,7 @@ import com.example.gottaeatemall.ui.screens.PokemonViewModel
 import com.example.gottaeatemall.ui.screens.SearchScreen
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
+import com.example.gottaeatemall.ui.screens.TeamTemplate
 import com.example.gottaeatemall.ui.theme.Red
 import java.util.UUID
 
@@ -211,16 +212,35 @@ fun App(
             }
 
             composable(route = AppScreen.TeamFormEdit.name) {
+                val team = FakeDatabase.getInstance().querySelect<TeamSchema>(
+                    from = "teams",
+                    where = { it.id == activeTeamId }
+                ).first()
+
+                val teamPokemon = FakeDatabase.getInstance().querySelect<TeamPokemonSchema>(
+                    from = "team_pokemon",
+                    where = { it.teamId == activeTeamId },
+                    orderBy = { it.slotId }
+                )
+
+                val teamPokemonMap = teamPokemon.map { teamMember ->
+                    val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+                        from = "pokemon",
+                        where = { it.id == teamMember.pokemonId }
+                    ).first()
+
+                    pokemon.name
+                }
+
+                val teamTemplate = TeamTemplate(
+                    name = team.name,
+                    pokemon = teamPokemonMap
+                )
+
                 TeamForm(
+                    teamTemplate = teamTemplate,
                     onSubmit = {},
                     onSave = { team ->
-                        println("SAVE TEAM")
-                        println(team.name)
-
-                        for (i in 0..5) {
-                            println(team.pokemon[i])
-                        }
-
                         // Update team name
                         FakeDatabase.getInstance().queryUpdate(
                             tableName = "teams",

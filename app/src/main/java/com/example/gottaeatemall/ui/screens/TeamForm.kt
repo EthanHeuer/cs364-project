@@ -20,7 +20,7 @@ import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormSlot
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormTopBar
 
 data class TeamTemplate(
-    val name: String = "",
+    var name: String = "",
     val pokemon: List<String> = listOf("", "", "", "", "", "")
 )
 
