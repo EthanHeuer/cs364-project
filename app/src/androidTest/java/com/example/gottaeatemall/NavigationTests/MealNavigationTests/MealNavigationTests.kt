@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.NavController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
+import androidx.test.espresso.action.ViewActions
 import com.example.gottaeatemall.App
 import com.example.gottaeatemall.AppScreen
 import com.example.gottaeatemall.R
@@ -60,23 +61,18 @@ class MealNavigationTests {
             .performClick()
     }
 
-    private fun navigateThroughApp(fP: String, sP: String){
-        navigateToIngredientsScreen()
-        navigateToSummaryScreen(fP, sP)
-    }
-
     private fun testAllCombinations(){
-        var swipeCounter = 0
+
         for (o in PokemonList){
             for (p in PokemonList){
                 if(o != p){
                     navigateToIngredientsScreen()
                     composeTestRule.onNodeWithContentDescription(o)
                         .performClick()
-                    if(swipeCounter > 8){
-                        composeTestRule.onNodeWithContentDescription("Metapod")
-                            .performTouchInput { swipeUp(1f, 50f) }
-                    }
+                    /*
+                    composeTestRule.onNodeWithContentDescription("Metapod")
+                        .performTouchInput { swipeUp(150f, 10f) }
+                        */
                     composeTestRule.onNodeWithContentDescription(p)
                         .performClick()
                     composeTestRule.onNodeWithText("Next")
@@ -84,7 +80,6 @@ class MealNavigationTests {
                     composeTestRule.onNodeWithText("$o, $p").assertIsDisplayed()
                     composeTestRule.onNodeWithStringId(R.string.back)
                         .performClick()
-                    swipeCounter++
                 }
             }
         }
@@ -112,7 +107,7 @@ class MealNavigationTests {
     @Test
     fun pokemonNavHost_BackToMainMealScreen(){
         navigateToIngredientsScreen()
-        navigateToSummaryScreen("Bulbasaur", "Ivysaur")
+        navigateToSummaryScreen("Caterpie", "Charmander")
         composeTestRule.onNodeWithStringId(R.string.back)
             .performClick()
         navController.assertCurrentRouteName(AppScreen.Meal.name)
