@@ -71,4 +71,34 @@ class PokemonAppNavigationTests {
             .performClick()
         navController.assertCurrentRouteName(AppScreen.Card.name)
     }
+    
+    @Test
+    fun pokemonNavHost_navigateToCardFormScreen() {
+        composeTestRule.onNodeWithStringId(R.string.page_card)
+            .performClick()
+        composeTestRule.onNodeWithStringId(R.string.make_card).performClick()
+        navController.assertCurrentRouteName(AppScreen.Form.name)
+    }
+
+    @Test
+    fun pokemonNavHost_navigateFromFormToCardScreen() {
+        composeTestRule.onNodeWithStringId(R.string.page_card)
+            .performClick()
+        composeTestRule.onNodeWithStringId(R.string.make_card).performClick()
+        composeTestRule.onNodeWithStringId(R.string.trainer_name).performTextInput("An")
+        composeTestRule.onNodeWithStringId(R.string.fav_eat).performTextInput("Pikachu")
+        composeTestRule.onNodeWithStringId(R.string.fav_battle).performTextInput("Pikachu")
+        composeTestRule.onNodeWithStringId(R.string.num_caught).performTextInput("123")
+        composeTestRule.onNodeWithStringId(R.string.badge_boulder).performClick()
+        composeTestRule.onNodeWithStringId(R.string.submit).performClick()
+
+        navController.assertCurrentRouteName(AppScreen.Card.name)
+    }
+    
+     @Test
+    fun pokemonNavHost_navigateToHomeScreen() {
+        composeTestRule.onNodeWithStringId(R.string.page_home)
+            .performClick()
+        navController.assertCurrentRouteName(AppScreen.Home.name)
+    }
 }
