@@ -51,6 +51,10 @@ fun MealPopupBox(
         var selectedPokemon by rememberSaveable { mutableStateOf("") }
         var ingredientAmount by remember { mutableStateOf(0) }
 
+        var pokemonItems = (1..30).map{
+            pokemonList
+        }
+
         LazyColumn(modifier = Modifier.weight(1f, false)) {
             items(pokemonList) { pokemon ->
                 Row(
@@ -79,7 +83,8 @@ fun MealPopupBox(
                             else {
                                 ingredientAmount--
                             }
-                        }
+                        },
+                        enabled = (ingredientAmount < 2 || checked.value),
                     )
                     Text(pokemon)
                 }
