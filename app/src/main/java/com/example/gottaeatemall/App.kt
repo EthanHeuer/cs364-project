@@ -71,7 +71,8 @@ fun AppBottomBar(
     navPageSearch: () -> Unit = {},
     navPageTeam: () -> Unit = {},
     navPageMeal: () -> Unit = {},
-    navPageCard: () -> Unit = {}
+    navPageCard: () -> Unit = {},
+    navPageHome: () -> Unit,
 ) {
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
@@ -81,6 +82,12 @@ fun AppBottomBar(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            BottomNavigationItem(
+                icon = { Icon(imageVector = Icons.Default.Home,"") },
+                label = { Text("Home") },
+                selected = (currentScreen.name == AppScreen.Home.name),
+                onClick = navPageHome
+            ) 
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Default.Search, "") },
                 label = { Text("Search") },
@@ -146,7 +153,7 @@ fun App(
             modifier = modifier.padding(innerPadding)
         ) {
             composable(route = AppScreen.Home.name) {
-                HomeScreen()
+                HomeScreen(uiState)
             }
 
             composable(route = AppScreen.Search.name) {
@@ -294,8 +301,32 @@ fun App(
 
 
 
-            composable(route = AppScreen.Card.name) {
-                CardScreen()
+           composable(route = AppScreen.Card.name) {
+                var ctx = LocalContext.current
+                CardScreen(
+                    onCreateButtonClicked = {
+                        viewModel.resetBadge()
+                        navController.navigate(AppScreen.Form.name)
+                                            },
+                    onShareButtonClicked = {onShareButtonClicked(ctx,uiState)},
+                    pokemonUIState = uiState,
+                )
+            }
+
+            composable(route = AppScreen.Form.name) {
+                val context = LocalContext.current
+                CardFormScreen(
+                    badge_options = badges.map{id -> context.resources.getString(id) },
+                    onSubmitButtonClicked = { name:String, numCaught:String, favEat:String, favBattle:String ->
+                            viewModel.setName(name)
+                            viewModel.setNumCaught(numCaught)
+                            viewModel.setFavBattle(favBattle)
+                            viewModel.setFavEat(favEat)
+                            navController.navigate(AppScreen.Card.name)
+                    },
+                    onGenderChanged = {gender:Boolean -> viewModel.setGender(gender)},
+                    onBadgeChanged = {badge:String -> viewModel.setBadge(badge)}
+                )
             }
 
             composable(route = AppScreen.Detail.name) {
@@ -319,6 +350,111 @@ fun resetMeal(
 ) {
     viewModel.resetOrder()
     navController.navigate(AppScreen.SelectIngredients.name)
+}
+fun onShareButtonClicked(ctx:Context, uiState: PokemonUIState){
+    val width = 600
+    val height = 670
+    val view = ComposeView(ctx)
+
+    view.visibility = View.GONE
+    view.layoutParams = LinearLayoutCompat.LayoutParams(width, height)
+
+    view.setContent {
+        TrainerInfo(
+            gender = uiState.boy_or_girl ,
+            name = uiState.trainerName,
+            favEat = uiState.favoritePokemonEat,
+            favBattle = uiState.favoritePokemonUse,
+            totalCaught = uiState.totalCaught,
+            badges = uiState.badges
+        )
+    }
+    view.visibility = View.VISIBLE
+    val bitmap2 = getBitmapFromView(view)
+    val bitmap = createBitmapFromView(view = view, width = width, height = height)
+    if (bitmap2!=null){onBitmapCreated2(bitmap2, ctx)}
+    view.viewTreeObserver.addOnGlobalLayoutListener(object :
+        ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
+            // val graphicUtils = GraphicUtils()
+            //val bitmap = createBitmapFromView(view = view, width = width, height = height)
+            //onBitmapCreated2(bitmap, ctx)
+            view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        }
+    })
+}
+
+fun onBitmapCreated(
+    bitmap: Bitmap,
+    context: Context
+) {
+    val uri = saveImageExternal(context, bitmap)
+    if(uri != null) {
+        shareImageUri(uri,context)
+    }
+}
+
+fun onBitmapCreated2(
+    bitmap:Bitmap,
+    context:Context
+){
+    val stringPath = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap, "Shared Card", null)
+    val uri = Uri.parse(stringPath)
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.putExtra(Intent.EXTRA_STREAM, uri)
+    intent.type = "image/*"
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            "Share Trainer Card"
+        )
+    )
+}
+
+/**
+ * Saves the image as PNG to the app's private external storage folder.
+ * @param image Bitmap to save.
+ * @return Uri of the saved file or null
+ */
+private fun saveImageExternal(context: Context, image: Bitmap): Uri? {
+    var uri: Uri? = null
+    try {
+        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "to-share.png")
+        val stream = FileOutputStream(file)
+        image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        stream.close()
+        uri = Uri.fromFile(file)
+    } catch (e: IOException) {
+        Log.d(TAG, "IOException while trying to write file for sharing: " + e.message)
+    }
+    return uri
+}
+
+/**
+ * Shares the PNG image from Uri.
+ * @param uri Uri of image to share.
+ */
+private fun shareImageUri(uri: Uri, context: Context) {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.putExtra(Intent.EXTRA_STREAM, uri)
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    intent.type = "image/*"
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            "Share Trainer Card"
+        )
+    )
+}
+
+@SuppressLint("ResourceAsColor")
+fun getBitmapFromView(view: View): Bitmap? {
+    val returnedBitmap = Bitmap.createBitmap(600, 670, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(returnedBitmap)
+    val bgDrawable = view.background
+    if (bgDrawable != null) bgDrawable.draw(canvas) else canvas.drawColor(R.color.white)
+    view.draw(canvas)
+    return returnedBitmap
 }
 
 @Preview(showBackground = true)
