@@ -14,11 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gottaeatemall.data.FakeDatabase
-import com.example.gottaeatemall.data.TeamPokemonSchema
-import com.example.gottaeatemall.data.TeamSchema
+import com.example.gottaeatemall.R
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenAppBar
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenDrawer
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamScreenSlot
@@ -27,20 +25,16 @@ import kotlinx.coroutines.launch
 
 /**
  * Screen for displaying a team
- * @param activeTeamId The id of the team to be displayed
- * @param onTeamCreate Callback for when a new team is created
- * @param onTeamEdit Callback for when a team is edited
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamScreen(
-    activeTeamId: Int,
+    viewModel: TeamViewModel,
     onTeamCreate: () -> Unit = {},
-    onTeamEdit: (Int) -> Unit
+    onTeamEdit: (Int) -> Unit,
+    onTeamDelete: (Int) -> Unit
 ) {
-    val viewModel: TeamViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
-    viewModel.setTeam(activeTeamId)
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -81,7 +75,7 @@ fun TeamScreen(
                             drawerState.open()
                         }
                     },
-                    onEdit = { onTeamEdit(uiState.teamId) },
+                    onEdit = { onTeamEdit(uiState.activeTeamId) },
                     onDelete = { deleteTeamDialog.value = true }
                 )
             }
@@ -106,10 +100,10 @@ fun TeamScreen(
 
     if (deleteTeamDialog.value) {
         AlertDialog(
-            title = { Text("Delete Team") },
+            title = { Text(stringResource(R.string.delete_dialog_title)) },
             text = {
                 Text(
-                    text = "Are you sure you want to delete this team? This action cannot be undone!",
+                    text = stringResource(R.string.delete_dialog_text),
                     softWrap = true
                 )
             },
@@ -120,32 +114,18 @@ fun TeamScreen(
                 OutlinedButton(
                     onClick = { deleteTeamDialog.value = false }
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(R.string.cancel))
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        FakeDatabase.getInstance().queryDelete<TeamSchema>(
-                            from = "teams",
-                            where = { it.id == activeTeamId }
-                        )
-
-                        FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
-                            from = "team_pokemon",
-                            where = { it.teamId == activeTeamId }
-                        )
-
-                        val teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
-                            from = "teams"
-                        ).first()
-
-                        viewModel.setTeam(teams.id)
+                        onTeamDelete(uiState.activeTeamId)
 
                         deleteTeamDialog.value = false
                     }
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = stringResource(R.string.confirm))
                 }
             }
         )

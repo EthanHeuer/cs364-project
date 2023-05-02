@@ -19,9 +19,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -46,6 +43,7 @@ import com.example.gottaeatemall.ui.screens.MealPopupBox
 import com.example.gottaeatemall.ui.screens.MealScreen
 import com.example.gottaeatemall.ui.screens.PokemonViewModel
 import com.example.gottaeatemall.ui.screens.SearchScreen
+import com.example.gottaeatemall.ui.screens.TeamComponents.TeamViewModel
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
 import com.example.gottaeatemall.ui.screens.mealSummary
@@ -116,7 +114,8 @@ fun AppBottomBar(
 fun App(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    viewModel: PokemonViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: PokemonViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModelTeam: TeamViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val context = LocalContext.current
     val database = AppDatabase.getInstance(context)
@@ -126,8 +125,8 @@ fun App(
         backStackEntry?.destination?.route ?: AppScreen.Home.name
     )
 
-    var activeTeamId by remember { mutableStateOf(1) }
     val uiState by viewModel.uiState.collectAsState()
+    val uiStateTeam by viewModelTeam.uiState.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -155,11 +154,38 @@ fun App(
 
             composable(route = AppScreen.Team.name) {
                 TeamScreen(
-                    activeTeamId = activeTeamId,
+                    viewModel = viewModelTeam,
                     onTeamCreate = { navController.navigate(AppScreen.TeamForm.name) },
                     onTeamEdit = { teamId ->
-                        activeTeamId = teamId
+                        viewModelTeam.setActiveTeamId(teamId)
                         navController.navigate(AppScreen.TeamFormEdit.name)
+                    },
+                    onTeamDelete = { teamId ->
+                        var teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
+                            from = "teams"
+                        )
+
+                        val teamIndex = teams.indexOfFirst { it.id == teamId }
+
+                        FakeDatabase.getInstance().queryDelete<TeamSchema>(
+                            from = "teams",
+                            where = { it.id == teamId }
+                        )
+
+                        FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
+                            from = "team_pokemon",
+                            where = { it.teamId == teamId }
+                        )
+
+                        teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
+                            from = "teams"
+                        )
+
+                        if (teamIndex > teams.size - 1) {
+                            viewModelTeam.setTeam(teams[teams.size - 1].id)
+                        } else {
+                            viewModelTeam.setTeam(teams[teamIndex].id)
+                        }
                     }
                 )
             }
@@ -205,12 +231,12 @@ fun App(
             composable(route = AppScreen.TeamFormEdit.name) {
                 val team = FakeDatabase.getInstance().querySelect<TeamSchema>(
                     from = "teams",
-                    where = { it.id == activeTeamId }
+                    where = { it.id == uiStateTeam.activeTeamId }
                 ).first()
 
                 val teamPokemon = FakeDatabase.getInstance().querySelect<TeamPokemonSchema>(
                     from = "team_pokemon",
-                    where = { it.teamId == activeTeamId },
+                    where = { it.teamId == uiStateTeam.activeTeamId },
                     orderBy = { it.slotId }
                 )
 
@@ -236,10 +262,10 @@ fun App(
                         FakeDatabase.getInstance().queryUpdate(
                             tableName = "teams",
                             values = TeamSchema(
-                                id = activeTeamId,
-                                name = team.name
+                                id = uiStateTeam.activeTeamId,
+                                name = updatedTeam.name
                             ),
-                            where = { it.id == activeTeamId }
+                            where = { it.id == uiStateTeam.activeTeamId }
                         )
 
                         // Update team pokemon
@@ -253,13 +279,15 @@ fun App(
                                 tableName = "team_pokemon",
                                 values = TeamPokemonSchema(
                                     id = UUID.randomUUID().hashCode(),
-                                    teamId = activeTeamId,
+                                    teamId = uiStateTeam.activeTeamId,
                                     slotId = i + 1,
                                     pokemonId = pokemon.id
                                 ),
-                                where = { it.teamId == activeTeamId && it.slotId == i + 1 }
+                                where = { it.teamId == uiStateTeam.activeTeamId && it.slotId == i + 1 }
                             )
                         }
+
+                        viewModelTeam.setTeam(uiStateTeam.activeTeamId)
 
                         navController.navigate(AppScreen.Team.name)
                     },

@@ -76,7 +76,7 @@ fun TeamScreenDrawer(
                             fontSize = 20.sp
                         )
                     },
-                    selected = team.id == uiState.teamId,
+                    selected = team.id == uiState.activeTeamId,
                     onClick = { onButtonSetTeam(team.id) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = LightBlue

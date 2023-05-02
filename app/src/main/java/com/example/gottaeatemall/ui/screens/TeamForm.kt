@@ -14,7 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.TeamTemplate
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormBottomBar
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormSlot
@@ -47,7 +49,7 @@ fun TeamForm(
 
     Scaffold(
         topBar = {
-            val title = if (editMode) "Edit Team" else "Create New Team"
+            val title = if (editMode) stringResource(R.string.edit_team) else stringResource(R.string.create_new_team)
             TeamFormTopBar(title = title, onBack = onCancel)
         },
         bottomBar = {
