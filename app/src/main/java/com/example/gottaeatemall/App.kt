@@ -48,6 +48,8 @@ import com.example.gottaeatemall.ui.screens.TeamComponents.TeamViewModel
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
 import com.example.gottaeatemall.ui.screens.mealSummary
+import com.example.gottaeatemall.ui.theme.DarkGray
+import com.example.gottaeatemall.ui.theme.LightBlue
 import com.example.gottaeatemall.ui.theme.Red
 import java.util.UUID
 
@@ -80,32 +82,41 @@ fun AppBottomBar(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Default.Search, "") },
                 label = { Text("Search") },
                 selected = (currentScreen.name == AppScreen.Search.name),
-                onClick = navPageSearch
+                onClick = navPageSearch,
+                selectedContentColor = LightBlue,
+                unselectedContentColor = DarkGray
             )
 
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Default.Menu, "") },
                 label = { Text(stringResource(R.string.team)) },
                 selected = (currentScreen.name == AppScreen.Team.name),
-                onClick = navPageTeam
+                onClick = navPageTeam,
+                selectedContentColor = LightBlue,
+                unselectedContentColor = DarkGray
             )
 
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Default.Favorite, "") },
                 label = { Text("Meal") },
                 selected = (currentScreen.name == AppScreen.Meal.name),
-                onClick = navPageMeal
+                onClick = navPageMeal,
+                selectedContentColor = LightBlue,
+                unselectedContentColor = DarkGray
             )
 
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Default.AccountBox, "") },
                 label = { Text("Card") },
                 selected = (currentScreen.name == AppScreen.Card.name),
-                onClick = navPageCard
+                onClick = navPageCard,
+                selectedContentColor = LightBlue,
+                unselectedContentColor = DarkGray
             )
         }
     }

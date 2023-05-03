@@ -16,7 +16,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.TeamTemplate
+import com.example.gottaeatemall.ui.theme.DarkGray
 import com.example.gottaeatemall.ui.theme.Gray
+import com.example.gottaeatemall.ui.theme.LightBlue
 
 /**
  * Component for displaying a secondary button.
@@ -33,7 +35,7 @@ fun SecondaryButton(
         modifier = Modifier.padding(10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Gray,
-            contentColor = Color.Black
+            contentColor = LightBlue
         )
     ) {
         Text(text = label)
@@ -66,9 +68,9 @@ fun TeamFormBottomBar(
             onClick = onCancel,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor = Color.Black
+                contentColor = DarkGray
             ),
-            border = BorderStroke(2.dp, Gray),
+            border = BorderStroke(2.dp, DarkGray),
             modifier = Modifier
                 .padding(8.dp)
         ) {

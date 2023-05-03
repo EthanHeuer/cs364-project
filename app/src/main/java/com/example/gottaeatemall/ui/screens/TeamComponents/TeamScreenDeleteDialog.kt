@@ -13,7 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.TeamUIState
+import com.example.gottaeatemall.ui.theme.DarkGray
 import com.example.gottaeatemall.ui.theme.Gray
+import com.example.gottaeatemall.ui.theme.LightBlue
 
 /**
  * Component for displaying the delete dialog in the team screen.
@@ -43,9 +45,9 @@ fun TeamScreenDeleteDialog(
                 onClick = { state.value = false },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
-                    contentColor = Color.Black
+                    contentColor = DarkGray
                 ),
-                border = BorderStroke(2.dp, Gray)
+                border = BorderStroke(2.dp, DarkGray)
             ) {
                 Text(text = stringResource(R.string.cancel))
             }
@@ -54,7 +56,7 @@ fun TeamScreenDeleteDialog(
             Button(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Gray,
-                    contentColor = Color.Black
+                    contentColor = LightBlue
                 ),
                 onClick = {
                     onTeamDelete(uiState.activeTeamId)
