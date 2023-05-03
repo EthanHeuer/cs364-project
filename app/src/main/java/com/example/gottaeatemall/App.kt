@@ -36,6 +36,7 @@ import com.example.gottaeatemall.data.PokemonSchema
 import com.example.gottaeatemall.data.TeamPokemonSchema
 import com.example.gottaeatemall.data.TeamSchema
 import com.example.gottaeatemall.data.TeamTemplate
+import com.example.gottaeatemall.data.TeamUIState
 import com.example.gottaeatemall.ui.screens.CardScreen
 import com.example.gottaeatemall.ui.screens.DetailScreen
 import com.example.gottaeatemall.ui.screens.HomeScreen
@@ -144,14 +145,23 @@ fun App(
             startDestination = AppScreen.Home.name,
             modifier = modifier.padding(innerPadding)
         ) {
+            /**
+             * Home Screen
+             */
             composable(route = AppScreen.Home.name) {
                 HomeScreen()
             }
 
+            /**
+             * Search Screen
+             */
             composable(route = AppScreen.Search.name) {
                 SearchScreen(database)
             }
 
+            /**
+             * Team Screen
+             */
             composable(route = AppScreen.Team.name) {
                 TeamScreen(
                     viewModel = viewModelTeam,
@@ -161,72 +171,33 @@ fun App(
                         navController.navigate(AppScreen.TeamFormEdit.name)
                     },
                     onTeamDelete = { teamId ->
-                        var teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
-                            from = "teams"
+                        teamScreenDelete(
+                            teamId = teamId,
+                            viewModelTeam = viewModelTeam
                         )
-
-                        val teamIndex = teams.indexOfFirst { it.id == teamId }
-
-                        FakeDatabase.getInstance().queryDelete<TeamSchema>(
-                            from = "teams",
-                            where = { it.id == teamId }
-                        )
-
-                        FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
-                            from = "team_pokemon",
-                            where = { it.teamId == teamId }
-                        )
-
-                        teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
-                            from = "teams"
-                        )
-
-                        if (teamIndex > teams.size - 1) {
-                            viewModelTeam.setTeam(teams[teams.size - 1].id)
-                        } else {
-                            viewModelTeam.setTeam(teams[teamIndex].id)
-                        }
                     }
                 )
             }
 
+            /**
+             * Team Form Screen
+             */
             composable(route = AppScreen.TeamForm.name) {
                 TeamForm(
                     onSubmit = { newTeam ->
-                        val teamId = UUID.randomUUID().hashCode()
-
-                        FakeDatabase.getInstance().queryInsert(
-                            into = "teams",
-                            values = TeamSchema(
-                                id = teamId,
-                                name = newTeam.name
-                            )
+                        teamFormSubmit(
+                            newTeam = newTeam,
+                            navController = navController,
                         )
-
-                        for (i in 0..5) {
-                            val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
-                                from = "pokemon",
-                                where = { it.name == newTeam.pokemon[i] }
-                            ).first()
-
-                            FakeDatabase.getInstance().queryInsert(
-                                into = "team_pokemon",
-                                values = TeamPokemonSchema(
-                                    id = UUID.randomUUID().hashCode(),
-                                    teamId = teamId,
-                                    slotId = i + 1,
-                                    pokemonId = pokemon.id
-                                )
-                            )
-                        }
-
-                        navController.navigate(AppScreen.Team.name)
                     },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
                     editMode = false
                 )
             }
 
+            /**
+             * Team Form Edit Screen
+             */
             composable(route = AppScreen.TeamFormEdit.name) {
                 val team = FakeDatabase.getInstance().querySelect<TeamSchema>(
                     from = "teams",
@@ -256,44 +227,21 @@ fun App(
                 TeamForm(
                     teamTemplate = teamTemplate,
                     onSave = { updatedTeam ->
-                        // Update team name
-                        FakeDatabase.getInstance().queryUpdate(
-                            tableName = "teams",
-                            values = TeamSchema(
-                                id = uiStateTeam.activeTeamId,
-                                name = updatedTeam.name
-                            ),
-                            where = { it.id == uiStateTeam.activeTeamId }
+                        teamFormSave(
+                            updatedTeam = updatedTeam,
+                            viewModelTeam = viewModelTeam,
+                            navController = navController,
+                            uiStateTeam = uiStateTeam
                         )
-
-                        // Update team pokemon
-                        for (i in 0..5) {
-                            val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
-                                from = "pokemon",
-                                where = { it.name == updatedTeam.pokemon[i] }
-                            ).first()
-
-                            FakeDatabase.getInstance().queryUpdate(
-                                tableName = "team_pokemon",
-                                values = TeamPokemonSchema(
-                                    id = UUID.randomUUID().hashCode(),
-                                    teamId = uiStateTeam.activeTeamId,
-                                    slotId = i + 1,
-                                    pokemonId = pokemon.id
-                                ),
-                                where = { it.teamId == uiStateTeam.activeTeamId && it.slotId == i + 1 }
-                            )
-                        }
-
-                        viewModelTeam.setTeam(uiStateTeam.activeTeamId)
-
-                        navController.navigate(AppScreen.Team.name)
                     },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
                     editMode = true
                 )
             }
 
+            /**
+             * Meal Screen
+             */
             composable(route = AppScreen.Meal.name) {
                 MealScreen(
                     onMealCreate =
@@ -301,6 +249,9 @@ fun App(
                 )
             }
 
+            /**
+             * Select Ingredients Screen
+             */
             composable(route = AppScreen.SelectIngredients.name) {
                 MealPopupBox(
                     pokemonList = PokemonList,
@@ -311,6 +262,9 @@ fun App(
                 )
             }
 
+            /**
+             * Meal Summary Screen
+             */
             composable(route = AppScreen.MealSummary.name) {
                 mealSummary(mealUIState = uiState,
                     onBackButtonSelected = {
@@ -318,12 +272,16 @@ fun App(
                     })
             }
 
-
-
+            /**
+             * Card Screen
+             */
             composable(route = AppScreen.Card.name) {
                 CardScreen()
             }
 
+            /**
+             * Pokemon Details Screen
+             */
             composable(route = AppScreen.Detail.name) {
                 DetailScreen()
             }
@@ -345,6 +303,111 @@ fun resetMeal(
 ) {
     viewModel.resetOrder()
     navController.navigate(AppScreen.SelectIngredients.name)
+}
+
+fun teamFormSubmit(
+    newTeam: TeamTemplate,
+    navController: NavHostController
+) {
+    val teamId = UUID.randomUUID().hashCode()
+
+    FakeDatabase.getInstance().queryInsert(
+        into = "teams",
+        values = TeamSchema(
+            id = teamId,
+            name = newTeam.name
+        )
+    )
+
+    for (i in 0..5) {
+        val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+            from = "pokemon",
+            where = { it.name == newTeam.pokemon[i] }
+        ).first()
+
+        FakeDatabase.getInstance().queryInsert(
+            into = "team_pokemon",
+            values = TeamPokemonSchema(
+                id = UUID.randomUUID().hashCode(),
+                teamId = teamId,
+                slotId = i + 1,
+                pokemonId = pokemon.id
+            )
+        )
+    }
+
+    navController.navigate(AppScreen.Team.name)
+}
+
+fun teamFormSave(
+    updatedTeam: TeamTemplate,
+    viewModelTeam: TeamViewModel,
+    uiStateTeam: TeamUIState,
+    navController: NavHostController
+) {
+    // Update team name
+    FakeDatabase.getInstance().queryUpdate(
+        tableName = "teams",
+        values = TeamSchema(
+            id = uiStateTeam.activeTeamId,
+            name = updatedTeam.name
+        ),
+        where = { it.id == uiStateTeam.activeTeamId }
+    )
+
+    // Update team pokemon
+    for (i in 0..5) {
+        val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+            from = "pokemon",
+            where = { it.name == updatedTeam.pokemon[i] }
+        ).first()
+
+        FakeDatabase.getInstance().queryUpdate(
+            tableName = "team_pokemon",
+            values = TeamPokemonSchema(
+                id = UUID.randomUUID().hashCode(),
+                teamId = uiStateTeam.activeTeamId,
+                slotId = i + 1,
+                pokemonId = pokemon.id
+            ),
+            where = { it.teamId == uiStateTeam.activeTeamId && it.slotId == i + 1 }
+        )
+    }
+
+    viewModelTeam.setTeam(uiStateTeam.activeTeamId)
+
+    navController.navigate(AppScreen.Team.name)
+}
+
+fun teamScreenDelete(
+    teamId: Int,
+    viewModelTeam: TeamViewModel
+) {
+    var teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
+        from = "teams"
+    )
+
+    val teamIndex = teams.indexOfFirst { it.id == teamId }
+
+    FakeDatabase.getInstance().queryDelete<TeamSchema>(
+        from = "teams",
+        where = { it.id == teamId }
+    )
+
+    FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
+        from = "team_pokemon",
+        where = { it.teamId == teamId }
+    )
+
+    teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
+        from = "teams"
+    )
+
+    if (teamIndex > teams.size - 1) {
+        viewModelTeam.setTeam(teams[teams.size - 1].id)
+    } else {
+        viewModelTeam.setTeam(teams[teamIndex].id)
+    }
 }
 
 @Preview(showBackground = true)
