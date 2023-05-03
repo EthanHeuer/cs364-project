@@ -1,5 +1,7 @@
 package com.example.gottaeatemall.ui.screens.TeamComponents
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.R
@@ -43,6 +46,31 @@ fun SecondaryButton(
 }
 
 /**
+ * Validates the team form and calls the onClick callback if the form is valid.
+ * @param teamTemplate The team template to validate.
+ * @param context The context to use for displaying the toast.
+ * @param onClick The callback to call if the form is valid.
+ */
+fun validateForm(
+    teamTemplate: TeamTemplate,
+    context: Context,
+    onClick: (TeamTemplate) -> Unit,
+) {
+    if (
+        teamTemplate.name.isNotEmpty() &&
+        teamTemplate.pokemon.all { it.isNotEmpty() }
+    ) {
+        onClick(teamTemplate)
+    } else {
+        Toast.makeText(
+            context,
+            "Please fill out all fields",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+}
+
+/**
  * Component for displaying the bottom bar in the team form.
  * @param teamTemplate The team template to display.
  * @param onSubmit The callback to call when the user clicks the submit button.
@@ -58,6 +86,8 @@ fun TeamFormBottomBar(
     onCancel: () -> Unit,
     editMode: Boolean
 ) {
+    val context = LocalContext.current
+
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -77,42 +107,19 @@ fun TeamFormBottomBar(
             Text(text = stringResource(R.string.cancel))
         }
 
-        if (editMode) {
-            // Save button
-            SecondaryButton(
-                label = stringResource(R.string.save),
-                onClick = {
-                    if (
-                        teamTemplate.name.isNotEmpty() &&
-                        teamTemplate.pokemon.all { it.isNotEmpty() }
-                    ) {
-                        onSave(
-                            TeamTemplate(
-                                teamTemplate.name,
-                                teamTemplate.pokemon
-                            )
-                        )
+        // Save or Submit button
+        SecondaryButton(
+            label = if (editMode) stringResource(R.string.save) else stringResource(R.string.submit),
+            onClick = {
+                validateForm(
+                    teamTemplate = teamTemplate,
+                    context = context,
+                    onClick = {
+                        if (editMode) onSave(TeamTemplate(it.name, it.pokemon)) else
+                            onSubmit(TeamTemplate(it.name, it.pokemon))
                     }
-                }
-            )
-        } else {
-            // Submit button
-            SecondaryButton(
-                label = stringResource(R.string.submit),
-                onClick = {
-                    if (
-                        teamTemplate.name.isNotEmpty() &&
-                        teamTemplate.pokemon.all { it.isNotEmpty() }
-                    ) {
-                        onSubmit(
-                            TeamTemplate(
-                                teamTemplate.name,
-                                teamTemplate.pokemon
-                            )
-                        )
-                    }
-                }
-            )
-        }
+                )
+            }
+        )
     }
 }
