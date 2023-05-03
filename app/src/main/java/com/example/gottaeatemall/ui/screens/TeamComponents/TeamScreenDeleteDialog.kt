@@ -10,6 +10,12 @@ import androidx.compose.ui.res.stringResource
 import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.TeamUIState
 
+/**
+ * Component for displaying the delete dialog in the team screen.
+ * @param state The state of the dialog.
+ * @param uiState The UI state of the team.
+ * @param onTeamDelete The callback to call when the user confirms the deletion.
+ */
 @Composable
 fun TeamScreenDeleteDialog(
     state: MutableState<Boolean>,
