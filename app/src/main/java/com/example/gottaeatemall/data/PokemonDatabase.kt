@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.*
 
-@Database(entities = [Pokemon::class], version = 1)
+@Database(entities = [Pokemon::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
 
@@ -23,16 +23,18 @@ abstract class AppDatabase : RoomDatabase() {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "gottaEatEmAllDB.sqlite"
-            ).createFromAsset("gottaEatEmAllDB.sqlite").build()
+            ).createFromAsset("gottaEatEmAllDB.sqlite").fallbackToDestructiveMigration()
+                .build()
         }
     }
 
     @Dao
     interface PokemonDao {
 
-        @Query("SELECT * FROM Pokemon WHERE name LIKE :query")
+        @Query("SELECT * FROM Pokemon WHERE name LIKE '%' || :query || '%'")
         suspend fun searchPokemon(query: String): List<Pokemon>
     }
+
 
 
 }
