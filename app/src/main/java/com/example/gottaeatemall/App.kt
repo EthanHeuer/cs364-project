@@ -49,7 +49,7 @@ import com.example.gottaeatemall.ui.screens.TeamComponents.TeamViewModel
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
 import com.example.gottaeatemall.ui.screens.mealSummary
-import com.example.gottaeatemall.ui.theme.DarkGray
+import com.example.gottaeatemall.ui.theme.DarkRed
 import com.example.gottaeatemall.ui.theme.LightBlue
 import com.example.gottaeatemall.ui.theme.Red
 import java.util.UUID
@@ -112,8 +112,8 @@ fun AppBottomBar(
                     label = { Text(appScreen.name) },
                     selected = (currentScreen.name == appScreen.name),
                     onClick = onClick,
-                    selectedContentColor = LightBlue,
-                    unselectedContentColor = DarkGray
+                    unselectedContentColor = DarkRed,
+                    selectedContentColor = LightBlue
                 )
             }
 
