@@ -20,7 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.FakeDatabase
 import com.example.gottaeatemall.data.PokemonSchema
 
@@ -103,7 +105,7 @@ fun TeamFormSlot(
                     DropdownMenuItem(
                         onClick = { },
                         enabled = false,
-                        text = { Text(text = "No matches found") }
+                        text = { Text(text = stringResource(R.string.no_matches_found)) }
                     )
                 } else {
                     matches.forEach { selectionOption ->

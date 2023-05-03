@@ -10,7 +10,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.TeamTemplate
 import com.example.gottaeatemall.ui.theme.Gray
 import com.example.gottaeatemall.ui.theme.LightGray
@@ -64,13 +66,13 @@ fun TeamFormBottomBar(
             modifier = Modifier
                 .padding(8.dp)
         ) {
-            Text(text = "Cancel")
+            Text(text = stringResource(R.string.cancel))
         }
 
         if (editMode) {
             // Save button
             SecondaryButton(
-                label = "Save",
+                label = stringResource(R.string.save),
                 onClick = {
                     if (
                         teamTemplate.name.isNotEmpty() &&
@@ -88,7 +90,7 @@ fun TeamFormBottomBar(
         } else {
             // Submit button
             SecondaryButton(
-                label = "Submit",
+                label = stringResource(R.string.submit),
                 onClick = {
                     if (
                         teamTemplate.name.isNotEmpty() &&

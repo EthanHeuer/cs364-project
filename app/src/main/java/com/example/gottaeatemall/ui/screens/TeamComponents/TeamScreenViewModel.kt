@@ -29,8 +29,6 @@ class TeamViewModel: ViewModel() {
      * @param teamId The id of the team to be displayed
      */
     fun setTeam(teamId: Int) {
-        println("setTeam $teamId")
-
         // get the team from the database
         val team = FakeDatabase.getInstance().querySelect<TeamSchema>(
             from = "teams",

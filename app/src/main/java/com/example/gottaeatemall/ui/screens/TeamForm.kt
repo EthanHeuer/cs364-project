@@ -34,10 +34,10 @@ import com.example.gottaeatemall.ui.screens.TeamComponents.TeamFormTopBar
 @Composable
 fun TeamForm(
     teamTemplate: TeamTemplate = TeamTemplate(),
-    onSubmit: (TeamTemplate) -> Unit,
-    onSave: (TeamTemplate) -> Unit,
-    onCancel: () -> Unit,
-    editMode: Boolean
+    onSubmit: (TeamTemplate) -> Unit = {},
+    onSave: (TeamTemplate) -> Unit = {},
+    onCancel: () -> Unit = {},
+    editMode: Boolean = false
 ) {
     var nameValue by remember { mutableStateOf(teamTemplate.name) }
     var slot1Value by remember { mutableStateOf(teamTemplate.pokemon[0]) }
@@ -85,7 +85,7 @@ fun TeamForm(
                 OutlinedTextField(
                     value = nameValue,
                     onValueChange = { nameValue = it },
-                    label = { Text(text = "Team Name") },
+                    label = { Text(text = stringResource(R.string.team_name)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

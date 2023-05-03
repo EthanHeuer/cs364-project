@@ -88,7 +88,7 @@ fun AppBottomBar(
 
             BottomNavigationItem(
                 icon = { Icon(imageVector = Icons.Default.Menu, "") },
-                label = { Text("Team") },
+                label = { Text(stringResource(R.string.team)) },
                 selected = (currentScreen.name == AppScreen.Team.name),
                 onClick = navPageTeam
             )
@@ -222,7 +222,6 @@ fun App(
 
                         navController.navigate(AppScreen.Team.name)
                     },
-                    onSave = { },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
                     editMode = false
                 )
@@ -256,7 +255,6 @@ fun App(
 
                 TeamForm(
                     teamTemplate = teamTemplate,
-                    onSubmit = {},
                     onSave = { updatedTeam ->
                         // Update team name
                         FakeDatabase.getInstance().queryUpdate(
