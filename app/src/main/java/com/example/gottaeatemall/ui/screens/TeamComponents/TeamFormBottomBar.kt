@@ -1,5 +1,6 @@
 package com.example.gottaeatemall.ui.screens.TeamComponents
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,12 +11,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.TeamTemplate
 import com.example.gottaeatemall.ui.theme.Gray
-import com.example.gottaeatemall.ui.theme.LightGray
 
 /**
  * Component for displaying a secondary button.
@@ -32,7 +33,7 @@ fun SecondaryButton(
         modifier = Modifier.padding(10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Gray,
-            contentColor = LightGray
+            contentColor = Color.Black
         )
     ) {
         Text(text = label)
@@ -63,6 +64,11 @@ fun TeamFormBottomBar(
         // Cancel button
         OutlinedButton(
             onClick = onCancel,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.Black
+            ),
+            border = BorderStroke(2.dp, Gray),
             modifier = Modifier
                 .padding(8.dp)
         ) {
