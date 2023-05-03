@@ -24,7 +24,7 @@ class PokemonAppNavigationTests {
     private lateinit var navController: TestNavHostController
 
     @Before
-    fun setupCupcakeNavHost(){
+    fun setupPokemonNavHost(){
         composeTestRule.setContent {
             navController =
                 TestNavHostController(LocalContext.current)
