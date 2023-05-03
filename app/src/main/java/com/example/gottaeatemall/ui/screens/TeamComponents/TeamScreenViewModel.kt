@@ -18,6 +18,12 @@ class TeamViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(TeamUIState())
     val uiState: StateFlow<TeamUIState> = _uiState.asStateFlow()
 
+    fun setActiveTeamId(teamId: Int){
+        _uiState.update { uiState ->
+            uiState.copy(activeTeamId = teamId)
+        }
+    }
+
     /**
      * Sets the team to be displayed
      * @param teamId The id of the team to be displayed
@@ -47,7 +53,7 @@ class TeamViewModel: ViewModel() {
         // update the ui state
         _uiState.update { uiState ->
             uiState.copy(
-                teamId = team.id,
+                activeTeamId = team.id,
                 name = team.name,
                 pokemon = pokemon
             )

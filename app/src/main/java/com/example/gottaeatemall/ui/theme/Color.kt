@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 // https://coolors.co/e3442b-484a47-5c6d70-e0e0e2-cfd6ea
 val Red = Color(0xFFE3442B)
+val DarkRed = Color(0xFF46130C)
 val DarkGray = Color(0xFF484A47)
 val Gray = Color(0xFF5C6D70)
 val LightGray = Color(0xFFC5C5C9)

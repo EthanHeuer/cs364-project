@@ -21,15 +21,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.FakeDatabase
 import com.example.gottaeatemall.data.TeamSchema
 import com.example.gottaeatemall.data.TeamUIState
 import com.example.gottaeatemall.ui.theme.Gray
 import com.example.gottaeatemall.ui.theme.LightBlue
-import com.example.gottaeatemall.ui.theme.LightGray
 
 /**
  * Component for displaying the drawer in the team screen.
@@ -54,10 +54,9 @@ fun TeamScreenDrawer(
         // Title
         Row {
             Text(
-                text = "Your Teams",
+                text = stringResource(R.string.your_teams),
                 modifier = Modifier.padding(16.dp),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 24.sp
             )
         }
 
@@ -76,7 +75,7 @@ fun TeamScreenDrawer(
                             fontSize = 20.sp
                         )
                     },
-                    selected = team.id == uiState.teamId,
+                    selected = team.id == uiState.activeTeamId,
                     onClick = { onButtonSetTeam(team.id) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = LightBlue
@@ -96,7 +95,7 @@ fun TeamScreenDrawer(
                 onClick = { onButtonNewTeam() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Gray,
-                    contentColor = LightGray
+                    contentColor = LightBlue
                 )
             ) {
                 Icon(
@@ -105,7 +104,7 @@ fun TeamScreenDrawer(
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "New Team")
+                Text(text = stringResource(R.string.new_team))
             }
         }
     }

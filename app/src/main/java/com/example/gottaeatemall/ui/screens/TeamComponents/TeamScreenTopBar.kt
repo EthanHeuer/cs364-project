@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.example.gottaeatemall.R
 import com.example.gottaeatemall.data.TeamUIState
 import com.example.gottaeatemall.ui.theme.DarkGray
 import com.example.gottaeatemall.ui.theme.LightGray
@@ -41,7 +43,7 @@ fun TeamScreenAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.menu_toggle),
                     tint = LightGray
                 )
             }
@@ -53,19 +55,18 @@ fun TeamScreenAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Edit,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.edit_team),
                     tint = LightGray
                 )
             }
 
             // Delete button
             IconButton(
-                onClick = onDelete,
-                enabled = false
+                onClick = onDelete
             ) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.delete_team),
                     tint = LightGray
                 )
             }
