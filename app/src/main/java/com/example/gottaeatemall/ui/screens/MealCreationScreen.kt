@@ -5,16 +5,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gottaeatemall.R
+import com.example.gottaeatemall.data.PokemonUIState
 
 /**
  * Creates the selecting ingredients screen with checkboxes
@@ -51,42 +55,58 @@ fun MealPopupBox(
         var selectedPokemon by rememberSaveable { mutableStateOf("") }
         var ingredientAmount by remember { mutableStateOf(0) }
 
-        var pokemonItems = (1..30).map{
-            pokemonList
+        var items by remember {
+            mutableStateOf(
+                (1 until pokemonList.size).map{
+                PokemonUIState(
+                    ingredient = "${pokemonList[it]}",
+                    isSelected = false
+                )
+            }
+            )
         }
 
         LazyColumn(modifier = Modifier.weight(1f, false)) {
-            items(pokemonList) { pokemon ->
+            items(items.size) { p ->
                 Row(
                     modifier =
                     Modifier
-                        .clickable {
-                            selectedPokemon = pokemon
-                            onFirstPokemonSelected(pokemon)
-                        }
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    val checked = remember { mutableStateOf(false)}
-                    Checkbox(
-                        modifier = Modifier.semantics
-                        { contentDescription = pokemon },
-                        checked = checked.value,
-                        onCheckedChange ={
-                            selectedPokemon = pokemon
-                            checked.value = it
-                            onFirstPokemonSelected(pokemon)
-                            if(checked.value) {
-                                ingredientAmount++
+                        .clickable(
+                            enabled = (ingredientAmount < 2 || items[p].isSelected)
+                        ) {
+                            //Find the index in the list that matches
+                            // and change it's is selected state
+                            items = items.mapIndexed{
+                                j, item->
+                                if(p == j){
+                                    item.copy(isSelected = !item.isSelected)
+                                }
+                                else{
+                                    item
+                                }
                             }
-                            else {
+                            if(items[p].isSelected){
+                                ingredientAmount++
+                            }else{
                                 ingredientAmount--
                             }
-                        },
-                        enabled = (ingredientAmount < 2 || checked.value),
-                    )
-                    Text(pokemon)
+                            selectedPokemon = items[p].ingredient
+                            onFirstPokemonSelected(items[p].ingredient)
+                        }
+                        .fillMaxWidth()
+                        .padding(15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(items[p].ingredient)
+                    if(items[p].isSelected){
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "${items[p].ingredient}",
+                            tint = Color.Green,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    }
                 }
             }
         }
@@ -131,6 +151,3 @@ fun MealPopupBox(
         }
     }
 }
-
-
-
