@@ -19,7 +19,11 @@ import com.example.gottaeatemall.ui.screens.TeamComponents.TeamViewModel
 import kotlinx.coroutines.launch
 
 /**
- * Screen for displaying a team
+ * Component for displaying the team screen.
+ * @param viewModel The view model for the team screen.
+ * @param onTeamCreate The callback to call when the user clicks the new team button.
+ * @param onTeamEdit The callback to call when the user clicks the edit team button.
+ * @param onTeamDelete The callback to call when the user clicks the delete team button.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +44,7 @@ fun TeamScreen(
 
     val deleteTeamDialog = remember { mutableStateOf(false) }
 
+    // Team Drawer and Scaffold
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -65,6 +70,7 @@ fun TeamScreen(
             }
         }
     ) {
+        // Team Scaffold
         Scaffold(
             topBar = {
                 TeamScreenAppBar(
@@ -79,6 +85,7 @@ fun TeamScreen(
                 )
             }
         ) { innerPadding ->
+            // Team Slots
             Box(modifier = Modifier.padding(innerPadding)) {
                 LazyColumn(
                     modifier = Modifier.padding(8.dp)
@@ -99,6 +106,7 @@ fun TeamScreen(
         }
     }
 
+    // Delete team dialog
     if (deleteTeamDialog.value) {
         TeamScreenDeleteDialog(
             state = deleteTeamDialog,

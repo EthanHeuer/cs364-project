@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +37,7 @@ import com.example.gottaeatemall.data.PokemonSchema
 import com.example.gottaeatemall.data.TeamPokemonSchema
 import com.example.gottaeatemall.data.TeamSchema
 import com.example.gottaeatemall.data.TeamTemplate
+import com.example.gottaeatemall.data.TeamUIState
 import com.example.gottaeatemall.ui.screens.CardScreen
 import com.example.gottaeatemall.ui.screens.DetailScreen
 import com.example.gottaeatemall.ui.screens.HomeScreen
@@ -47,6 +49,8 @@ import com.example.gottaeatemall.ui.screens.TeamComponents.TeamViewModel
 import com.example.gottaeatemall.ui.screens.TeamForm
 import com.example.gottaeatemall.ui.screens.TeamScreen
 import com.example.gottaeatemall.ui.screens.mealSummary
+import com.example.gottaeatemall.ui.theme.DarkRed
+import com.example.gottaeatemall.ui.theme.LightBlue
 import com.example.gottaeatemall.ui.theme.Red
 import java.util.UUID
 
@@ -63,6 +67,14 @@ enum class AppScreen(@StringRes val title: Int) {
     TeamFormEdit(title = R.string.page_team_form_edit)
 }
 
+/**
+ * App bottom navigation bar
+ * @param currentScreen Current screen
+ * @param navPageSearch Navigate to search page
+ * @param navPageTeam Navigate to team page
+ * @param navPageMeal Navigate to meal page
+ * @param navPageCard Navigate to card page
+ */
 @Composable
 fun AppBottomBar(
     currentScreen: AppScreen,
@@ -79,37 +91,70 @@ fun AppBottomBar(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Search, "") },
-                label = { Text("Search") },
-                selected = (currentScreen.name == AppScreen.Search.name),
+
+            /**
+             * Bottom Navigation Bar Item
+             * TODO - Take this out of local scope. But, it doesn't recognize BottomNavigationItem
+             */
+            @Composable
+            fun BarItem(
+                appScreen: AppScreen,
+                icon: ImageVector,
+                onClick: () -> Unit
+            ) {
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = appScreen.name
+                        )
+                    },
+                    label = { Text(appScreen.name) },
+                    selected = (currentScreen.name == appScreen.name),
+                    onClick = onClick,
+                    unselectedContentColor = DarkRed,
+                    selectedContentColor = LightBlue
+                )
+            }
+
+            // Search Navigation Item
+            BarItem(
+                appScreen = AppScreen.Search,
+                icon = Icons.Default.Search,
                 onClick = navPageSearch
             )
 
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Menu, "") },
-                label = { Text(stringResource(R.string.team)) },
-                selected = (currentScreen.name == AppScreen.Team.name),
+            // Team Navigation Item
+            BarItem(
+                appScreen = AppScreen.Team,
+                icon = Icons.Default.Menu,
                 onClick = navPageTeam
             )
 
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Favorite, "") },
-                label = { Text("Meal") },
-                selected = (currentScreen.name == AppScreen.Meal.name),
+            // Meal Navigation Item
+            BarItem(
+                appScreen = AppScreen.Meal,
+                icon = Icons.Default.Favorite,
                 onClick = navPageMeal
             )
 
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.AccountBox, "") },
-                label = { Text("Card") },
-                selected = (currentScreen.name == AppScreen.Card.name),
+            // Card Navigation Item
+            BarItem(
+                appScreen = AppScreen.Card,
+                icon = Icons.Default.AccountBox,
                 onClick = navPageCard
             )
         }
     }
 }
 
+/**
+ * Main App
+ * @param modifier Modifier
+ * @param navController Navigation Controller
+ * @param viewModel Pokemon View Model
+ * @param viewModelTeam Team View Model
+ */
 @Composable
 fun App(
     modifier: Modifier = Modifier,
@@ -144,14 +189,23 @@ fun App(
             startDestination = AppScreen.Home.name,
             modifier = modifier.padding(innerPadding)
         ) {
+            /**
+             * Home Screen
+             */
             composable(route = AppScreen.Home.name) {
                 HomeScreen()
             }
 
+            /**
+             * Search Screen
+             */
             composable(route = AppScreen.Search.name) {
                 SearchScreen(database)
             }
 
+            /**
+             * Team Screen
+             */
             composable(route = AppScreen.Team.name) {
                 TeamScreen(
                     viewModel = viewModelTeam,
@@ -161,72 +215,34 @@ fun App(
                         navController.navigate(AppScreen.TeamFormEdit.name)
                     },
                     onTeamDelete = { teamId ->
-                        var teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
-                            from = "teams"
+                        teamScreenDelete(
+                            teamId = teamId,
+                            viewModelTeam = viewModelTeam
                         )
-
-                        val teamIndex = teams.indexOfFirst { it.id == teamId }
-
-                        FakeDatabase.getInstance().queryDelete<TeamSchema>(
-                            from = "teams",
-                            where = { it.id == teamId }
-                        )
-
-                        FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
-                            from = "team_pokemon",
-                            where = { it.teamId == teamId }
-                        )
-
-                        teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
-                            from = "teams"
-                        )
-
-                        if (teamIndex > teams.size - 1) {
-                            viewModelTeam.setTeam(teams[teams.size - 1].id)
-                        } else {
-                            viewModelTeam.setTeam(teams[teamIndex].id)
-                        }
                     }
                 )
             }
 
+            /**
+             * Team Form Screen
+             */
             composable(route = AppScreen.TeamForm.name) {
                 TeamForm(
                     onSubmit = { newTeam ->
-                        val teamId = UUID.randomUUID().hashCode()
-
-                        FakeDatabase.getInstance().queryInsert(
-                            into = "teams",
-                            values = TeamSchema(
-                                id = teamId,
-                                name = newTeam.name
-                            )
+                        teamFormSubmit(
+                            newTeam = newTeam,
+                            viewModelTeam = viewModelTeam,
+                            navController = navController
                         )
-
-                        for (i in 0..5) {
-                            val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
-                                from = "pokemon",
-                                where = { it.name == newTeam.pokemon[i] }
-                            ).first()
-
-                            FakeDatabase.getInstance().queryInsert(
-                                into = "team_pokemon",
-                                values = TeamPokemonSchema(
-                                    id = UUID.randomUUID().hashCode(),
-                                    teamId = teamId,
-                                    slotId = i + 1,
-                                    pokemonId = pokemon.id
-                                )
-                            )
-                        }
-
-                        navController.navigate(AppScreen.Team.name)
                     },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
                     editMode = false
                 )
             }
 
+            /**
+             * Team Form Edit Screen
+             */
             composable(route = AppScreen.TeamFormEdit.name) {
                 val team = FakeDatabase.getInstance().querySelect<TeamSchema>(
                     from = "teams",
@@ -256,44 +272,21 @@ fun App(
                 TeamForm(
                     teamTemplate = teamTemplate,
                     onSave = { updatedTeam ->
-                        // Update team name
-                        FakeDatabase.getInstance().queryUpdate(
-                            tableName = "teams",
-                            values = TeamSchema(
-                                id = uiStateTeam.activeTeamId,
-                                name = updatedTeam.name
-                            ),
-                            where = { it.id == uiStateTeam.activeTeamId }
+                        teamFormSave(
+                            updatedTeam = updatedTeam,
+                            viewModelTeam = viewModelTeam,
+                            navController = navController,
+                            uiStateTeam = uiStateTeam
                         )
-
-                        // Update team pokemon
-                        for (i in 0..5) {
-                            val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
-                                from = "pokemon",
-                                where = { it.name == updatedTeam.pokemon[i] }
-                            ).first()
-
-                            FakeDatabase.getInstance().queryUpdate(
-                                tableName = "team_pokemon",
-                                values = TeamPokemonSchema(
-                                    id = UUID.randomUUID().hashCode(),
-                                    teamId = uiStateTeam.activeTeamId,
-                                    slotId = i + 1,
-                                    pokemonId = pokemon.id
-                                ),
-                                where = { it.teamId == uiStateTeam.activeTeamId && it.slotId == i + 1 }
-                            )
-                        }
-
-                        viewModelTeam.setTeam(uiStateTeam.activeTeamId)
-
-                        navController.navigate(AppScreen.Team.name)
                     },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
                     editMode = true
                 )
             }
 
+            /**
+             * Meal Screen
+             */
             composable(route = AppScreen.Meal.name) {
                 MealScreen(
                     onMealCreate =
@@ -301,6 +294,9 @@ fun App(
                 )
             }
 
+            /**
+             * Select Ingredients Screen
+             */
             composable(route = AppScreen.SelectIngredients.name) {
                 MealPopupBox(
                     pokemonList = PokemonList,
@@ -311,6 +307,9 @@ fun App(
                 )
             }
 
+            /**
+             * Meal Summary Screen
+             */
             composable(route = AppScreen.MealSummary.name) {
                 mealSummary(mealUIState = uiState,
                     onBackButtonSelected = {
@@ -318,12 +317,16 @@ fun App(
                     })
             }
 
-
-
+            /**
+             * Card Screen
+             */
             composable(route = AppScreen.Card.name) {
                 CardScreen()
             }
 
+            /**
+             * Pokemon Details Screen
+             */
             composable(route = AppScreen.Detail.name) {
                 DetailScreen()
             }
@@ -345,6 +348,136 @@ fun resetMeal(
 ) {
     viewModel.resetOrder()
     navController.navigate(AppScreen.SelectIngredients.name)
+}
+
+/**
+ * Action to be performed when a team is created
+ * @param newTeam The new team to be created
+ * @param viewModelTeam The team view model
+ * @param navController The nav controller
+ */
+fun teamFormSubmit(
+    newTeam: TeamTemplate,
+    viewModelTeam: TeamViewModel,
+    navController: NavHostController
+) {
+    val teamId = UUID.randomUUID().hashCode()
+
+    // Insert team
+    FakeDatabase.getInstance().queryInsert(
+        into = "teams",
+        values = TeamSchema(
+            id = teamId,
+            name = newTeam.name
+        )
+    )
+
+    // Insert team pokemon
+    for (i in 0..5) {
+        val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+            from = "pokemon",
+            where = { it.name == newTeam.pokemon[i] }
+        ).first()
+
+        FakeDatabase.getInstance().queryInsert(
+            into = "team_pokemon",
+            values = TeamPokemonSchema(
+                id = UUID.randomUUID().hashCode(),
+                teamId = teamId,
+                slotId = i + 1,
+                pokemonId = pokemon.id
+            )
+        )
+    }
+
+    // Set active team to the newly created team
+    viewModelTeam.setTeam(teamId)
+
+    navController.navigate(AppScreen.Team.name)
+}
+
+/**
+ * Action to be performed when a team is edited
+ * @param updatedTeam The updated team
+ * @param viewModelTeam The team view model
+ * @param uiStateTeam The team UI state
+ * @param navController The nav controller
+ */
+fun teamFormSave(
+    updatedTeam: TeamTemplate,
+    viewModelTeam: TeamViewModel,
+    uiStateTeam: TeamUIState,
+    navController: NavHostController
+) {
+    // Update team name
+    FakeDatabase.getInstance().queryUpdate(
+        tableName = "teams",
+        values = TeamSchema(
+            id = uiStateTeam.activeTeamId,
+            name = updatedTeam.name
+        ),
+        where = { it.id == uiStateTeam.activeTeamId }
+    )
+
+    // Update team pokemon
+    for (i in 0..5) {
+        val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
+            from = "pokemon",
+            where = { it.name == updatedTeam.pokemon[i] }
+        ).first()
+
+        FakeDatabase.getInstance().queryUpdate(
+            tableName = "team_pokemon",
+            values = TeamPokemonSchema(
+                id = UUID.randomUUID().hashCode(),
+                teamId = uiStateTeam.activeTeamId,
+                slotId = i + 1,
+                pokemonId = pokemon.id
+            ),
+            where = { it.teamId == uiStateTeam.activeTeamId && it.slotId == i + 1 }
+        )
+    }
+
+    // Update the team view model
+    viewModelTeam.setTeam(uiStateTeam.activeTeamId)
+
+    navController.navigate(AppScreen.Team.name)
+}
+
+/**
+ * Action to be performed when a team is deleted
+ * @param teamId The id of the team to be deleted
+ * @param viewModelTeam The view model for the team screen
+ */
+fun teamScreenDelete(
+    teamId: Int,
+    viewModelTeam: TeamViewModel
+) {
+    var teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
+        from = "teams"
+    )
+
+    val teamIndex = teams.indexOfFirst { it.id == teamId }
+
+    FakeDatabase.getInstance().queryDelete<TeamSchema>(
+        from = "teams",
+        where = { it.id == teamId }
+    )
+
+    FakeDatabase.getInstance().queryDelete<TeamPokemonSchema>(
+        from = "team_pokemon",
+        where = { it.teamId == teamId }
+    )
+
+    teams = FakeDatabase.getInstance().querySelect(
+        from = "teams"
+    )
+
+    if (teamIndex > teams.size - 1) {
+        viewModelTeam.setTeam(teams[teams.size - 1].id)
+    } else {
+        viewModelTeam.setTeam(teams[teamIndex].id)
+    }
 }
 
 @Preview(showBackground = true)

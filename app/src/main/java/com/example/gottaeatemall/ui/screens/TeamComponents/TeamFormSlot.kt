@@ -102,12 +102,14 @@ fun TeamFormSlot(
                 )
 
                 if (matches.isEmpty()) {
+                    // If there are no matches, display a disabled menu item
                     DropdownMenuItem(
                         onClick = { },
                         enabled = false,
                         text = { Text(text = stringResource(R.string.no_matches_found)) }
                     )
                 } else {
+                    // Otherwise, display the matches
                     matches.forEach { selectionOption ->
                         DropdownMenuItem(
                             onClick = {
