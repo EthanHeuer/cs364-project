@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,6 +67,14 @@ enum class AppScreen(@StringRes val title: Int) {
     TeamFormEdit(title = R.string.page_team_form_edit)
 }
 
+/**
+ * App bottom navigation bar
+ * @param currentScreen Current screen
+ * @param navPageSearch Navigate to search page
+ * @param navPageTeam Navigate to team page
+ * @param navPageMeal Navigate to meal page
+ * @param navPageCard Navigate to card page
+ */
 @Composable
 fun AppBottomBar(
     currentScreen: AppScreen,
@@ -83,45 +92,69 @@ fun AppBottomBar(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Search, "") },
-                label = { Text("Search") },
-                selected = (currentScreen.name == AppScreen.Search.name),
-                onClick = navPageSearch,
-                selectedContentColor = LightBlue,
-                unselectedContentColor = DarkGray
+            /**
+             * Bottom Navigation Bar Item
+             * TODO - Take this out of local scope. But, it doesn't recognize BottomNavigationItem
+             */
+            @Composable
+            fun BarItem(
+                appScreen: AppScreen,
+                icon: ImageVector,
+                onClick: () -> Unit
+            ) {
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = appScreen.name
+                        )
+                    },
+                    label = { Text(appScreen.name) },
+                    selected = (currentScreen.name == appScreen.name),
+                    onClick = onClick,
+                    selectedContentColor = LightBlue,
+                    unselectedContentColor = DarkGray
+                )
+            }
+
+            // Search Navigation Item
+            BarItem(
+                appScreen = AppScreen.Search,
+                icon = Icons.Default.Search,
+                onClick = navPageSearch
             )
 
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Menu, "") },
-                label = { Text(stringResource(R.string.team)) },
-                selected = (currentScreen.name == AppScreen.Team.name),
-                onClick = navPageTeam,
-                selectedContentColor = LightBlue,
-                unselectedContentColor = DarkGray
+            // Team Navigation Item
+            BarItem(
+                appScreen = AppScreen.Team,
+                icon = Icons.Default.Menu,
+                onClick = navPageTeam
             )
 
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Favorite, "") },
-                label = { Text("Meal") },
-                selected = (currentScreen.name == AppScreen.Meal.name),
-                onClick = navPageMeal,
-                selectedContentColor = LightBlue,
-                unselectedContentColor = DarkGray
+            // Meal Navigation Item
+            BarItem(
+                appScreen = AppScreen.Meal,
+                icon = Icons.Default.Favorite,
+                onClick = navPageMeal
             )
 
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.AccountBox, "") },
-                label = { Text("Card") },
-                selected = (currentScreen.name == AppScreen.Card.name),
-                onClick = navPageCard,
-                selectedContentColor = LightBlue,
-                unselectedContentColor = DarkGray
+            // Card Navigation Item
+            BarItem(
+                appScreen = AppScreen.Card,
+                icon = Icons.Default.AccountBox,
+                onClick = navPageCard
             )
         }
     }
 }
 
+/**
+ * Main App
+ * @param modifier Modifier
+ * @param navController Navigation Controller
+ * @param viewModel Pokemon View Model
+ * @param viewModelTeam Team View Model
+ */
 @Composable
 fun App(
     modifier: Modifier = Modifier,
@@ -198,7 +231,8 @@ fun App(
                     onSubmit = { newTeam ->
                         teamFormSubmit(
                             newTeam = newTeam,
-                            navController = navController,
+                            viewModelTeam = viewModelTeam,
+                            navController = navController
                         )
                     },
                     onCancel = { navController.navigate(AppScreen.Team.name) },
@@ -316,12 +350,20 @@ fun resetMeal(
     navController.navigate(AppScreen.SelectIngredients.name)
 }
 
+/**
+ * Action to be performed when a team is created
+ * @param newTeam The new team to be created
+ * @param viewModelTeam The team view model
+ * @param navController The nav controller
+ */
 fun teamFormSubmit(
     newTeam: TeamTemplate,
+    viewModelTeam: TeamViewModel,
     navController: NavHostController
 ) {
     val teamId = UUID.randomUUID().hashCode()
 
+    // Insert team
     FakeDatabase.getInstance().queryInsert(
         into = "teams",
         values = TeamSchema(
@@ -330,6 +372,7 @@ fun teamFormSubmit(
         )
     )
 
+    // Insert team pokemon
     for (i in 0..5) {
         val pokemon = FakeDatabase.getInstance().querySelect<PokemonSchema>(
             from = "pokemon",
@@ -347,9 +390,19 @@ fun teamFormSubmit(
         )
     }
 
+    // Set active team to the newly created team
+    viewModelTeam.setTeam(teamId)
+
     navController.navigate(AppScreen.Team.name)
 }
 
+/**
+ * Action to be performed when a team is edited
+ * @param updatedTeam The updated team
+ * @param viewModelTeam The team view model
+ * @param uiStateTeam The team UI state
+ * @param navController The nav controller
+ */
 fun teamFormSave(
     updatedTeam: TeamTemplate,
     viewModelTeam: TeamViewModel,
@@ -385,11 +438,17 @@ fun teamFormSave(
         )
     }
 
+    // Update the team view model
     viewModelTeam.setTeam(uiStateTeam.activeTeamId)
 
     navController.navigate(AppScreen.Team.name)
 }
 
+/**
+ * Action to be performed when a team is deleted
+ * @param teamId The id of the team to be deleted
+ * @param viewModelTeam The view model for the team screen
+ */
 fun teamScreenDelete(
     teamId: Int,
     viewModelTeam: TeamViewModel
@@ -410,7 +469,7 @@ fun teamScreenDelete(
         where = { it.teamId == teamId }
     )
 
-    teams = FakeDatabase.getInstance().querySelect<TeamSchema>(
+    teams = FakeDatabase.getInstance().querySelect(
         from = "teams"
     )
 
