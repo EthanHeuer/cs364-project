@@ -5,7 +5,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
+/**
+ * Tables for the Room database
+ */
 @Entity (tableName = "Meal")
 data class Meal (
     @PrimaryKey val mealID: Int?,

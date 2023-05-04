@@ -197,7 +197,7 @@ fun EditTextField(
     @StringRes label: Int,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     keyboardOptions: KeyboardOptions,
     keyboardActions: KeyboardActions
 ) {
