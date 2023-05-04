@@ -5,6 +5,7 @@ data class PokemonUIState(
     val ingredient: String = "",
     val calories: Int = 0,
     val mealCalories: Int = 0,
+    val completeMeal: String = "",
     val isSelected: Boolean = false,
     val trainerName: String = "",
     val trainerBadgeCouzznt: Int = 0,
