@@ -24,7 +24,10 @@ import com.example.gottaeatemall.data.Pokemon
 import com.example.gottaeatemall.data.PokemonRepository
 import com.example.gottaeatemall.data.SearchViewModel
 
-
+/**
+ * @param database: The app database being used
+ * Screen with the search bar, shows results after pressing search button and updating the bar itself
+ */
 
 @Composable
 fun SearchScreen(database: AppDatabase) {
@@ -59,6 +62,10 @@ fun SearchScreen(database: AppDatabase) {
         }
     }
 }
+/**
+ * @param pokemon: an individual pokemon in the database
+ * The box that shows the results of the search
+ */
 
 @Composable
 fun PokemonListItem(pokemon: Pokemon) {
