@@ -1,6 +1,7 @@
 package com.example.gottaeatemall.NavigationTests.MealNavigationTests
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -41,43 +42,47 @@ class MealNavigationTests {
         Assert.assertEquals(expectedRouteName, currentBackStackEntry?.destination?.route)
     }
 
+    /**
+     * Navigate to the meal screen
+     */
     private fun navigateToMealScreen(){
         composeTestRule.onNodeWithStringId(R.string.page_meal)
             .performClick()
     }
 
+    /**
+     * Navigate to the ingredients screen
+     */
     private fun navigateToIngredientsScreen() {
         navigateToMealScreen()
         composeTestRule.onNodeWithText("Create Meal Here")
             .performClick()
     }
 
+    /**
+     * Navigate to the summary screen based on two Pokemon strings
+     */
     private fun navigateToSummaryScreen(firstPokemon: String, secondPokemon: String){
-        composeTestRule.onNodeWithContentDescription(firstPokemon)
+        composeTestRule.onNodeWithText(firstPokemon)
             .performClick()
-        composeTestRule.onNodeWithContentDescription(secondPokemon)
+        composeTestRule.onNodeWithText(secondPokemon)
             .performClick()
         composeTestRule.onNodeWithText("Next")
             .performClick()
     }
 
     private fun testAllCombinations(){
-
-        for (o in PokemonList){
-            for (p in PokemonList){
-                if(o != p){
+        for (o in 1..10){
+            for (p in 1..10){
+                if(PokemonList[o] != PokemonList[p]){
                     navigateToIngredientsScreen()
-                    composeTestRule.onNodeWithContentDescription(o)
+                    composeTestRule.onNodeWithText(PokemonList[o])
                         .performClick()
-                    /*
-                    composeTestRule.onNodeWithContentDescription("Metapod")
-                        .performTouchInput { swipeUp(150f, 10f) }
-                        */
-                    composeTestRule.onNodeWithContentDescription(p)
+                    composeTestRule.onNodeWithText(PokemonList[p])
                         .performClick()
                     composeTestRule.onNodeWithText("Next")
                         .performClick()
-                    composeTestRule.onNodeWithText("$o, $p").assertIsDisplayed()
+                    composeTestRule.onNodeWithText("${PokemonList[o]}, ${PokemonList[p]}").assertIsDisplayed()
                     composeTestRule.onNodeWithStringId(R.string.back)
                         .performClick()
                 }
@@ -104,6 +109,9 @@ class MealNavigationTests {
         navController.assertCurrentRouteName(AppScreen.MealSummary.name)
     }
 
+    /**
+     * Go through the entire meal making process
+     */
     @Test
     fun pokemonNavHost_BackToMainMealScreen(){
         navigateToIngredientsScreen()
@@ -113,8 +121,30 @@ class MealNavigationTests {
         navController.assertCurrentRouteName(AppScreen.Meal.name)
     }
 
+    /**
+     * Test possible combinations of the first ten items
+     */
     @Test
     fun testPokemonCombinations(){
         testAllCombinations()
+    }
+
+    /**
+     * Test that when no Pokemon are selected, you cannot click next
+     */
+    @Test
+    fun testIngredients_NoPokemonSelected(){
+        navigateToIngredientsScreen()
+        composeTestRule.onNodeWithText("Next")
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun testIngredients_OnePokemonSelected(){
+        navigateToIngredientsScreen()
+        composeTestRule.onNodeWithText("Squirtle")
+            .performClick()
+        composeTestRule.onNodeWithText("Next")
+            .assertIsNotEnabled()
     }
 }

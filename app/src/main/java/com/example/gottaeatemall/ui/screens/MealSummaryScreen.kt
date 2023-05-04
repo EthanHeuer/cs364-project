@@ -15,6 +15,13 @@ import com.example.gottaeatemall.data.DataSource.pokemonMealTypes
 import com.example.gottaeatemall.data.PokemonUIState
 import java.util.*
 
+/**
+ * Displays all of the meal information
+ *
+ * @param mealUIState The UI state of the current meal that has the data to display
+ * @param onBackButtonSelected When the user is done looking at the meal,
+ * takes them to them to the home screen
+ */
 @Composable
 fun mealSummary(
 mealUIState: PokemonUIState,
@@ -55,7 +62,7 @@ onBackButtonSelected: () -> Unit
         }
         //List out how many calories are in the meal
         Text("Calories", fontWeight = FontWeight.Bold)
-        Text("1000 calories")
+        Text("${mealUIState.mealCalories}")
         Divider(thickness = 1.dp)
         Spacer(modifier = Modifier.padding(10.dp))
 
