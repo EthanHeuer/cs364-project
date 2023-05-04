@@ -304,7 +304,8 @@ fun App(
             composable(route = AppScreen.Meal.name) {
                 MealScreen(
                     onMealCreate =
-                    { navController.navigate(AppScreen.SelectIngredients.name) }
+                    { resetMeal(viewModel, navController)},
+                    mealUIState = uiState
                 )
             }
 
@@ -329,8 +330,9 @@ fun App(
             composable(route = AppScreen.MealSummary.name) {
                 mealSummary(mealUIState = uiState,
                     onBackButtonSelected = {
-                        finishMeal(viewModel, navController)
-                    })
+                        navController.navigate(AppScreen.Meal.name)
+                    },
+                onSelectionChanged = {viewModel.getMeal(it)})
             }
 
             /**

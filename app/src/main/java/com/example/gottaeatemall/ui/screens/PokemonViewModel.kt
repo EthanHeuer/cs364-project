@@ -54,6 +54,17 @@ class PokemonViewModel: ViewModel() {
     }
 
     /**
+     * Update the ui state of the meal for the type
+     *
+     * @param meal The meal type the user ordered
+     */
+    fun getMeal(meal: String){
+        _uiState.update{currentState ->
+            currentState.copy(completeMeal = meal)
+        }
+    }
+
+    /**
      * Resets the meal order
      */
     fun resetOrder(){
