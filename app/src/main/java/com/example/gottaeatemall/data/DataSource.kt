@@ -1,5 +1,7 @@
 package com.example.gottaeatemall.data
 
+import com.example.gottaeatemall.R
+
 object DataSource {
     val pokemonMealTypes = listOf(
         "Sandwich",
@@ -67,5 +69,15 @@ object DataSource {
         900,1490,1165,1337,1337,1425,1515,540,1679,1750,816,935,1690,
         1365,1365,985,615,1090,810,1320,1660,2000,1490,1570,1570,
         825,1165,1675,1914,1700
+    )
+    val badges = listOf(
+        R.string.badge_boulder,
+        R.string.badge_cascade,
+        R.string.badge_thunder,
+        R.string.badge_rainbow,
+        R.string.badge_marsh,
+        R.string.badge_soul,
+        R.string.badge_volcano,
+        R.string.badge_earth
     )
 }

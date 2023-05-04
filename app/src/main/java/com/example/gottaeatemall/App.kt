@@ -1,5 +1,17 @@
 package com.example.gottaeatemall
 
+import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,47 +24,31 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.gottaeatemall.data.AppDatabase
+import com.example.gottaeatemall.data.*
 import com.example.gottaeatemall.data.DataSource.PokemonCalories
 import com.example.gottaeatemall.data.DataSource.PokemonList
-import com.example.gottaeatemall.data.FakeDatabase
-import com.example.gottaeatemall.data.PokemonSchema
-import com.example.gottaeatemall.data.TeamPokemonSchema
-import com.example.gottaeatemall.data.TeamSchema
-import com.example.gottaeatemall.data.TeamTemplate
-import com.example.gottaeatemall.data.TeamUIState
-import com.example.gottaeatemall.ui.screens.CardScreen
-import com.example.gottaeatemall.ui.screens.DetailScreen
-import com.example.gottaeatemall.ui.screens.HomeScreen
-import com.example.gottaeatemall.ui.screens.MealPopupBox
-import com.example.gottaeatemall.ui.screens.MealScreen
-import com.example.gottaeatemall.ui.screens.PokemonViewModel
-import com.example.gottaeatemall.ui.screens.SearchScreen
+import com.example.gottaeatemall.ui.screens.*
 import com.example.gottaeatemall.ui.screens.TeamComponents.TeamViewModel
-import com.example.gottaeatemall.ui.screens.TeamForm
-import com.example.gottaeatemall.ui.screens.TeamScreen
-import com.example.gottaeatemall.ui.screens.mealSummary
 import com.example.gottaeatemall.ui.theme.DarkRed
 import com.example.gottaeatemall.ui.theme.LightBlue
 import com.example.gottaeatemall.ui.theme.Red
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.UUID
 
 enum class AppScreen(@StringRes val title: Int) {
@@ -63,6 +59,7 @@ enum class AppScreen(@StringRes val title: Int) {
     SelectIngredients(title = R.string.ingredient_list),
     MealSummary(title = R.string.meal_summary),
     Card(title = R.string.page_card),
+    Form(title = R.string.page_form),
     Detail(title = R.string.page_detail),
     TeamForm(title = R.string.page_team_form),
     TeamFormEdit(title = R.string.page_team_form_edit)
@@ -82,7 +79,8 @@ fun AppBottomBar(
     navPageSearch: () -> Unit = {},
     navPageTeam: () -> Unit = {},
     navPageMeal: () -> Unit = {},
-    navPageCard: () -> Unit = {}
+    navPageCard: () -> Unit = {},
+    navPageHome: () -> Unit
 ) {
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
@@ -117,6 +115,13 @@ fun AppBottomBar(
                     selectedContentColor = LightBlue
                 )
             }
+
+            // Search Navigation Item
+            BarItem(
+                appScreen = AppScreen.Home,
+                icon = Icons.Default.Home,
+                onClick = navPageHome
+            )
 
             // Search Navigation Item
             BarItem(
@@ -173,6 +178,13 @@ fun App(
 
     val uiState by viewModel.uiState.collectAsState()
     val uiStateTeam by viewModelTeam.uiState.collectAsState()
+    var isWork by remember {
+        mutableStateOf(false)
+    }
+    if (isWork) {
+        onShareButtonClicked2(ctx = LocalContext.current, uiState = uiState)
+        isWork = false
+    }
 
     Scaffold(
         bottomBar = {
@@ -181,7 +193,8 @@ fun App(
                 navPageSearch = { navController.navigate(AppScreen.Search.name) },
                 navPageTeam = { navController.navigate(AppScreen.Team.name) },
                 navPageMeal = { navController.navigate(AppScreen.Meal.name) },
-                navPageCard = { navController.navigate(AppScreen.Card.name) }
+                navPageCard = { navController.navigate(AppScreen.Card.name) },
+                navPageHome = { navController.navigate(AppScreen.Home.name) }
             )
         }
     ) { innerPadding ->
@@ -194,7 +207,7 @@ fun App(
              * Home Screen
              */
             composable(route = AppScreen.Home.name) {
-                HomeScreen()
+                HomeScreen(uiState)
             }
 
             /**
@@ -326,14 +339,37 @@ fun App(
              * Card Screen
              */
             composable(route = AppScreen.Card.name) {
-                CardScreen()
+                CardScreen(
+                    onCreateButtonClicked = {
+                        viewModel.resetBadge()
+                        viewModel.setGender(true)
+                        navController.navigate(AppScreen.Form.name)
+                    },
+                    onShareButtonClicked = {
+                        isWork = true
+                    },
+                    pokemonUIState = uiState,
+                )
             }
 
             /**
-             * Pokemon Details Screen
+             * Pokemon Card Form Screen
              */
-            composable(route = AppScreen.Detail.name) {
-                DetailScreen()
+            composable(route = AppScreen.Form.name) {
+                val context = LocalContext.current
+                CardFormScreen(
+                    badge_options = DataSource.badges.map{ id -> context.resources.getString(id) },
+                    onSubmitButtonClicked = { name:String, numCaught:String, favEat:String, favBattle:String, id:Int ->
+                        viewModel.setName(name)
+                        viewModel.setNumCaught(numCaught)
+                        viewModel.setFavBattle(favBattle)
+                        viewModel.setFavEat(favEat)
+                        viewModel.setID(id)
+                        navController.navigate(AppScreen.Card.name)
+                    },
+                    onGenderChanged = {gender:Boolean -> viewModel.setGender(gender)},
+                    onBadgeChanged = {badge:String -> viewModel.setBadge(badge)}
+                )
             }
         }
     }
@@ -497,6 +533,92 @@ fun teamScreenDelete(
     }
 }
 
+/**
+ * event when share button is clicked for Card Screen
+ * @param ctx context
+ * @param uiState State to get information from
+ */
+@Composable
+fun onShareButtonClicked2(ctx: Context, uiState: PokemonUIState){
+    val view = CardView(ctx)
+    view.ContentPokemon(ui = uiState)
+    capture(view, ctx)
+}
+
+/**
+ * event when bitmap of card is created
+ * @param bitmap the created bitmap
+ * @param context Context
+ */
+fun onBitmapCreated(
+    bitmap: Bitmap,
+    context: Context
+) {
+    val uri = saveImageExternal(context, bitmap)
+
+    if(uri != null) {
+        shareImageUri(uri,context)
+    }
+}
+
+/**
+ * Saves the image as PNG to the app's private external storage folder.
+ * @param image Bitmap to save.
+ * @param context Context
+ * @return Uri of the saved file or null
+ */
+private fun saveImageExternal(context: Context, image: Bitmap): Uri? {
+    var uri: Uri? = null
+    try {
+        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "to-share.png")
+        val stream = FileOutputStream(file)
+        image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        stream.close()
+        val file2 = File(
+            Environment.getExternalStorageDirectory().toString() + "/" + "to-share.png"
+        )
+        uri =
+            FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file2)
+    } catch (e: IOException) {
+        Log.d(ContentValues.TAG, "IOException while trying to write file for sharing: " + e.message)
+    }
+    return uri
+}
+
+/**
+ * Shares the PNG image from Uri.
+ * @param uri Uri of image to share.
+ * @param context Context
+ */
+private fun shareImageUri(uri: Uri, context: Context) {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+    intent.clipData = ClipData.newRawUri("", uri)
+    intent.putExtra(Intent.EXTRA_STREAM, uri)
+    intent.type = "image/*"
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            "Share Trainer Card"
+        )
+    )
+}
+
+/**
+ * turn view into bitmap
+ * @param view view to turn into bitmap
+ * @param context Context
+ */
+fun capture(view: CardView, context: Context) {
+    val bitmap = ImageUtils.generateBitmap(view)
+    Log.d(ContentValues.TAG,bitmap.width.toString())
+    onBitmapCreated(bitmap, context)
+}
+
+/**
+ * Preview of App
+ */
 @Preview(showBackground = true)
 @Composable
 fun AppPreview() {
