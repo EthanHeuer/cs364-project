@@ -66,7 +66,8 @@ onSelectionChanged: (String) -> Unit = {}
         Text(text = "Choose meal type:")
         Box(modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp),){
+            .padding(20.dp),
+        contentAlignment = Alignment.Center){
             ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = {expanded = !expanded}) {
                 TextField(
                     value = selectedText,
