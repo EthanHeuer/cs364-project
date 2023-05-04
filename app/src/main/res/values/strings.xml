@@ -8,6 +8,7 @@
     <string name="page_detail">Detail</string>
     <string name="page_team_form">Team Form</string>
     <string name="page_team_form_edit">Team Edit Form</string>
+    <string name="page_form">Form</string>
 
     <string name="create_meal">Create a Meal</string>
     <string name="favorite_meal">Favorite Meal</string>
@@ -34,4 +35,21 @@
     <string name="menu_toggle">Menu Toggle</string>
     <string name="delete_team">Delete Team</string>
     <string name="no_matches_found">No matches found</string>
+
+    <string name="trainer_name">Trainer Name</string>
+    <string name="play_time">Total Play Time</string>
+    <string name="num_caught">Number of Pokemon Caught</string>
+    <string name="fav_battle">Favorite Pokemon</string>
+    <string name="fav_eat">Favorite Pokemon to Eat</string>
+    <string name="badge_boulder">Boulder</string>
+    <string name="badge_cascade">Cascade</string>
+    <string name="badge_thunder">Thunder</string>
+    <string name="badge_rainbow">Rainbow</string>
+    <string name="badge_marsh">Marsh</string>
+    <string name="badge_soul">Soul</string>
+    <string name="badge_volcano">Volcano</string>
+    <string name="badge_earth">Earth</string>
+    <string name="boy">Boy</string>
+    <string name="girl">Girl</string>
+    <string name="make_card">Make a new Trainer card</string>
 </resources>
