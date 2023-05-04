@@ -8,7 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.gottaeatemall.data.DataSource
+import com.example.gottaeatemall.data.PokemonUIState
+import java.util.*
 
 /**
  * Area where the user can search Pokemon stats,
@@ -19,7 +24,7 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun MealScreen(
-    onMealCreate: () -> Unit = {},
+    onMealCreate: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -27,22 +32,23 @@ fun MealScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Search Bar goes here")
+        Text(text = "Meal Maker Screen",
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.padding(15.dp))
-        Text("Meal Maker Screen")
         Button(
             onClick = onMealCreate
         ) {
             Text(text = "Create Meal Here")
         }
         Spacer(modifier = Modifier.padding(25.dp))
-        PreviousMeals()
     }
 }
 
 /**
  * Lists the previous meals that the user has ordered
  */
+/*
 @Composable
 fun PreviousMeals(){
     Box(modifier = Modifier
@@ -54,6 +60,8 @@ fun PreviousMeals(){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "Previous Meals")
+            Spacer(modifier = Modifier.padding(7.dp))
         }
     }
 }
+*/

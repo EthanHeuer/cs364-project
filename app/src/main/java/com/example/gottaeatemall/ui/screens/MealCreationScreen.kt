@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -17,8 +18,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gottaeatemall.R
+import com.example.gottaeatemall.data.AppDatabase
+import com.example.gottaeatemall.data.PokemonRepository
 import com.example.gottaeatemall.data.PokemonUIState
+import com.example.gottaeatemall.data.SearchViewModel
 
 /**
  * Creates the selecting ingredients screen with checkboxes
@@ -33,12 +38,13 @@ import com.example.gottaeatemall.data.PokemonUIState
 @Composable
 fun MealPopupBox(
     pokemonList: List<String>,
+    pokemonCals: List<Int>,
     onFirstPokemonSelected: (String) -> Unit = {},
+    changeMealCalories: (Int) -> Unit = {},
     selectNext: () -> Unit,
     reset: () ->Unit = {},
     title: String
 ){
-
     Column(modifier = Modifier
         .padding(horizontal = 15.dp)
         .fillMaxWidth(),
@@ -54,19 +60,25 @@ fun MealPopupBox(
         Spacer(modifier = Modifier.padding(15.dp))
         var selectedPokemon by rememberSaveable { mutableStateOf("") }
         var ingredientAmount by remember { mutableStateOf(0) }
+        var cals by remember { mutableStateOf(0) }
+        val listState = rememberLazyListState()
 
         var items by remember {
             mutableStateOf(
-                (1 until pokemonList.size).map{
+                (pokemonList.indices).map{
                 PokemonUIState(
                     ingredient = "${pokemonList[it]}",
-                    isSelected = false
+                    isSelected = false,
+                    calories = pokemonCals[it]
                 )
             }
             )
         }
 
-        LazyColumn(modifier = Modifier.weight(1f, false)) {
+        LazyColumn(modifier = Modifier
+            .weight(1f, false),
+            state = listState
+        ) {
             items(items.size) { p ->
                 Row(
                     modifier =
@@ -76,22 +88,23 @@ fun MealPopupBox(
                         ) {
                             //Find the index in the list that matches
                             // and change it's is selected state
-                            items = items.mapIndexed{
-                                j, item->
-                                if(p == j){
+                            items = items.mapIndexed { j, item ->
+                                if (p == j) {
                                     item.copy(isSelected = !item.isSelected)
-                                }
-                                else{
+                                } else {
                                     item
                                 }
                             }
-                            if(items[p].isSelected){
+                            if (items[p].isSelected) {
                                 ingredientAmount++
-                            }else{
+                                cals += items[p].calories
+                            } else {
                                 ingredientAmount--
+                                cals -= items[p].calories
                             }
                             selectedPokemon = items[p].ingredient
                             onFirstPokemonSelected(items[p].ingredient)
+                            changeMealCalories(cals)
                         }
                         .fillMaxWidth()
                         .padding(15.dp),

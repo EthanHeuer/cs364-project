@@ -31,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gottaeatemall.data.AppDatabase
+import com.example.gottaeatemall.data.DataSource.PokemonCalories
 import com.example.gottaeatemall.data.DataSource.PokemonList
 import com.example.gottaeatemall.data.FakeDatabase
 import com.example.gottaeatemall.data.PokemonSchema
@@ -290,7 +291,7 @@ fun App(
             composable(route = AppScreen.Meal.name) {
                 MealScreen(
                     onMealCreate =
-                    { navController.navigate(AppScreen.SelectIngredients.name) },
+                    { navController.navigate(AppScreen.SelectIngredients.name) }
                 )
             }
 
@@ -300,7 +301,9 @@ fun App(
             composable(route = AppScreen.SelectIngredients.name) {
                 MealPopupBox(
                     pokemonList = PokemonList,
-                    onFirstPokemonSelected = { viewModel.addIngredient(it) },
+                    pokemonCals = PokemonCalories,
+                    onFirstPokemonSelected = { viewModel.addIngredient(it)},
+                    changeMealCalories = {viewModel.addCalories(it)},
                     selectNext = { navController.navigate(AppScreen.MealSummary.name) },
                     title = stringResource(id = R.string.choose_pokemon_meal),
                     reset = { resetMeal(viewModel, navController) }
@@ -334,6 +337,12 @@ fun App(
     }
 }
 
+/**
+ * Finishes the meal and resets the order to the home screen
+ *
+ * @param viewModel The view model of the current order
+ * @param navController The nav controller to send the user to the meal home screen
+ */
 fun finishMeal(
     viewModel: PokemonViewModel,
     navController: NavHostController
@@ -342,6 +351,12 @@ fun finishMeal(
     navController.popBackStack(AppScreen.Meal.name, false)
 }
 
+/**
+ * Reset the meal order screen
+ *
+ * @param viewModel The current viewmodel for the ingredients screen
+ * @param navController Reset the ingredients screen
+ */
 fun resetMeal(
     viewModel: PokemonViewModel,
     navController: NavHostController
