@@ -56,24 +56,28 @@ fun MealScreen(
  */
 
 @Composable
-fun PreviousMeals(mealUIState: PokemonUIState){
-    Box(modifier = Modifier
-        .background(Color.Gray)
-        .fillMaxWidth(),
-    ){
-        if(mealUIState.mealCalories != 0)
-        Column(
-        ) {
-            Text(text = "Previous Meals: ", fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.padding(7.dp))
+fun PreviousMeals(mealUIState: PokemonUIState) {
+    Box(
+        modifier = Modifier
+            .background(Color.Gray)
+            .fillMaxWidth(),
+    ) {
+        if (mealUIState.mealCalories != 0) {
+            Column(
+            ) {
+                Text(text = "Previous Meals: ", fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.padding(7.dp))
                 Spacer(modifier = Modifier.padding(7.dp))
                 Text(text = "Complete Meal: ", fontWeight = FontWeight.Bold)
-                Text(text = "${mealUIState.ingredients[0]} + ${mealUIState.ingredients[1]} " +
-                        "${mealUIState.completeMeal}")
+                Text(
+                    text = "${mealUIState.ingredients[0]} + ${mealUIState.ingredients[1]} " +
+                            "${mealUIState.completeMeal}"
+                )
                 Spacer(modifier = Modifier.padding(7.dp))
                 Text("Calories: ", fontWeight = FontWeight.Bold)
                 Text("${mealUIState.mealCalories}")
             }
         }
     }
+}
 
